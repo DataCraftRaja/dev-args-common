@@ -1,0 +1,163 @@
+# Default values for scalable-pipelines Helm chart
+
+global:
+  environment: dev
+  imageRegistry: ""
+  imagePullSecrets: []
+  
+  # Spark configuration
+  spark:
+    driverMemory: "4g"
+    executorMemory: "8g"
+    executorCores: 4
+    executorInstances: 10
+    dynamicAllocation:
+      enabled: true
+      minExecutors: 5
+      maxExecutors: 20
+  
+  # Storage
+  storage:
+    dataLakeBucket: ""
+    checkpointsBucket: ""
+  
+  # Kafka
+  kafka:
+    bootstrapServers: ""
+    topics:
+      events: "raw-events"
+      processed: "processed-events"
+  
+  # Monitoring
+  monitoring:
+    prometheus:
+      enabled: true
+      port: 9090
+    grafana:
+      enabled: true
+    alerting:
+      enabled: true
+
+# Batch Pipeline
+batchPipeline:
+  enabled: true
+  name: "daily-etl"
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  image:
+    repository: "scalable-pipelines-batch"
+    tag: "latest"
+    pullPolicy: "Always"
+  resources:
+    driver:
+      requests:
+        memory: "5Gi"
+        cpu: "2"
+      limits:
+        memory: "6Gi"
+        cpu: "4"
+    executor:
+      requests:
+        memory: "8Gi"
+        cpu: "4"
+      limits:
+        memory: "10Gi"
+        cpu: "6"
+  config:
+    source:
+      type: "jdbc"
+      url: ""
+      table: ""
+    sink:
+      type: "delta"
+      path: ""
+      partitionBy: ["event_date"]
+
+# Streaming Pipeline
+streamingPipeline:
+  enabled: true
+  name: "event-processor"
+  replicas: 3
+  image:
+    repository: "scalable-pipelines-streaming"
+    tag: "latest"
+    pullPolicy: "Always"
+  resources:
+    requests:
+      memory: "3Gi"
+      cpu: "1"
+    limits:
+      memory: "4Gi"
+      cpu: "2"
+  config:
+    source:
+      type: "kafka"
+      topic: "raw-events"
+    sink:
+      type: "delta"
+      path: ""
+      partitionBy: ["event_date"]
+
+# Airflow
+airflow:
+  enabled: false
+  image: "apache/airflow:2.7.0"
+  executor: "KubernetesExecutor"
+  config:
+    core:
+      load_examples: false
+      dags_are_paused_at_creation: true
+    scheduler:
+      min_file_process_interval: 30
+  resources:
+    webserver:
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
+      limits:
+        memory: "2Gi"
+        cpu: "1"
+    scheduler:
+      requests:
+        memory: "2Gi"
+        cpu: "1"
+      limits:
+        memory: "4Gi"
+        cpu: "2"
+
+# Service Accounts
+serviceAccounts:
+  spark:
+    create: true
+    name: "spark"
+    annotations:
+      eks.amazonaws.com/role-arn: ""
+  airflow:
+    create: false
+    name: "airflow"
+
+# Network Policies
+networkPolicies:
+  enabled: true
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+      ports:
+        - protocol: TCP
+          port: 4040
+        - protocol: TCP
+          port: 9090
+
+# Pod Disruption Budgets
+podDisruptionBudgets:
+  enabled: true
+  minAvailable: 1
+
+# Horizontal Pod Autoscaler
+hpa:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilization: 70
+  targetMemoryUtilization: 80

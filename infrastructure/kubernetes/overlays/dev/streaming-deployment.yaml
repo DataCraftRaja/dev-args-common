@@ -1,0 +1,76 @@
+# Kubernetes Deployment for Streaming Pipeline
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-processor
+  namespace: data-pipelines
+  labels:
+    app: event-processor
+    component: streaming-pipeline
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: event-processor
+  template:
+    metadata:
+      labels:
+        app: event-processor
+    spec:
+      serviceAccountName: spark
+      containers:
+        - name: spark-streaming
+          image: scalable-pipelines-streaming:latest
+          imagePullPolicy: Always
+          command:
+            - python
+            - -m
+            - pipelines.streaming.event_processor.main
+            - --config
+            - /configs/pipeline.yaml
+          env:
+            - name: SPARK_DRIVER_MEMORY
+              value: "2g"
+            - name: SPARK_EXECUTOR_MEMORY
+              value: "4g"
+            - name: SPARK_EXECUTOR_CORES
+              value: "2"
+            - name: SPARK_EXECUTOR_INSTANCES
+              value: "5"
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-config
+                  key: kafka_bootstrap
+          resources:
+            requests:
+              memory: "3Gi"
+              cpu: "1"
+            limits:
+              memory: "4Gi"
+              cpu: "2"
+          volumeMounts:
+            - name: config
+              mountPath: /configs
+            - name: spark-conf
+              mountPath: /opt/spark/conf
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4040
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4040
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: pipeline-config
+        - name: spark-conf
+          configMap:
+            name: spark-config

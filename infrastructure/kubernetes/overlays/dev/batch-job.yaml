@@ -1,0 +1,63 @@
+# Kubernetes Deployment for Batch Pipeline
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: daily-etl
+  namespace: data-pipelines
+  labels:
+    app: daily-etl
+    component: batch-pipeline
+spec:
+  template:
+    metadata:
+      labels:
+        app: daily-etl
+    spec:
+      serviceAccountName: spark
+      restartPolicy: OnFailure
+      containers:
+        - name: spark-driver
+          image: scalable-pipelines-batch:latest
+          imagePullPolicy: Always
+          command:
+            - python
+            - -m
+            - pipelines.batch.daily_etl.main
+            - --config
+            - /configs/pipeline.yaml
+          env:
+            - name: SPARK_DRIVER_MEMORY
+              value: "4g"
+            - name: SPARK_EXECUTOR_MEMORY
+              value: "8g"
+            - name: SPARK_EXECUTOR_CORES
+              value: "4"
+            - name: SPARK_EXECUTOR_INSTANCES
+              value: "10"
+            - name: AWS_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: pipeline-config
+                  key: aws_region
+          resources:
+            requests:
+              memory: "5Gi"
+              cpu: "2"
+            limits:
+              memory: "6Gi"
+              cpu: "4"
+          volumeMounts:
+            - name: config
+              mountPath: /configs
+            - name: spark-conf
+              mountPath: /opt/spark/conf
+      volumes:
+        - name: config
+          configMap:
+            name: pipeline-config
+        - name: spark-conf
+          configMap:
+            name: spark-config
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 86400

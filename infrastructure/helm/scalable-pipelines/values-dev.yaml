@@ -1,0 +1,116 @@
+# Development environment values for scalable-pipelines Helm chart
+
+global:
+  environment: dev
+  imageRegistry: ""
+  imagePullSecrets: []
+  
+  spark:
+    driverMemory: "2g"
+    executorMemory: "4g"
+    executorCores: 2
+    executorInstances: 3
+    dynamicAllocation:
+      enabled: true
+      minExecutors: 1
+      maxExecutors: 5
+  
+  storage:
+    dataLakeBucket: "scalable-pipelines-data-lake-dev"
+    checkpointsBucket: "scalable-pipelines-checkpoints-dev"
+  
+  kafka:
+    bootstrapServers: "kafka-dev:9092"
+    topics:
+      events: "raw-events-dev"
+      processed: "processed-events-dev"
+  
+  monitoring:
+    prometheus:
+      enabled: true
+      port: 9090
+    grafana:
+      enabled: true
+    alerting:
+      enabled: false
+
+batchPipeline:
+  enabled: true
+  name: "daily-etl-dev"
+  schedule: "0 2 * * *"
+  image:
+    repository: "scalable-pipelines-batch"
+    tag: "latest"
+    pullPolicy: "Always"
+  resources:
+    driver:
+      requests:
+        memory: "3Gi"
+        cpu: "1"
+      limits:
+        memory: "4Gi"
+        cpu: "2"
+    executor:
+      requests:
+        memory: "4Gi"
+        cpu: "2"
+      limits:
+        memory: "6Gi"
+        cpu: "4"
+  config:
+    source:
+      type: "jdbc"
+      url: "jdbc:postgresql://postgres-dev:5432/source_db"
+      table: "raw_events"
+    sink:
+      type: "delta"
+      path: "s3a://scalable-pipelines-data-lake-dev/processed/events/daily"
+      partitionBy: ["event_date"]
+
+streamingPipeline:
+  enabled: true
+  name: "event-processor-dev"
+  replicas: 2
+  image:
+    repository: "scalable-pipelines-streaming"
+    tag: "latest"
+    pullPolicy: "Always"
+  resources:
+    requests:
+      memory: "2Gi"
+      cpu: "500m"
+    limits:
+      memory: "3Gi"
+      cpu: "1"
+  config:
+    source:
+      type: "kafka"
+      topic: "raw-events-dev"
+    sink:
+      type: "delta"
+      path: "s3a://scalable-pipelines-data-lake-dev/processed/events/streaming"
+      partitionBy: ["event_date"]
+
+airflow:
+  enabled: false
+
+serviceAccounts:
+  spark:
+    create: true
+    name: "spark"
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::123456789012:role/scalable-pipelines-spark-sa-dev"
+
+networkPolicies:
+  enabled: true
+
+podDisruptionBudgets:
+  enabled: true
+  minAvailable: 1
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilization: 70
+  targetMemoryUtilization: 80
