@@ -13,3 +13,4 @@ if __name__ == "__main__":
     print_star_pyramid(5)
     print("\nRight Triangle Star Pattern:")
     print_star_right_triangle(5)
+
