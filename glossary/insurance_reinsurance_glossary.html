@@ -1,0 +1,2777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insurance & Reinsurance Enterprise Knowledge Base — Arch Re Data Engineering</title>
+<style>
+  :root {
+    --primary: #0a2540;
+    --primary-light: #163e69;
+    --primary-dark: #061524;
+    --accent: #0070f3;
+    --accent-light: #e0f2fe;
+    --accent-gold: #c59b27;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --tag-bg: #f1f5f9;
+    --code-bg: #f8fafc;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 14px rgba(10,37,64,0.08);
+    --shadow-lg: 0 10px 30px rgba(10,37,64,0.12);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 70%, var(--primary-light) 100%);
+    color: #fff;
+    padding: 1.75rem 2rem;
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+  }
+
+  .brand-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .brand-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #c59b27 0%, #eab308 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #061524;
+    box-shadow: 0 4px 10px rgba(197, 155, 39, 0.4);
+    letter-spacing: -0.5px;
+  }
+
+  header h1 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+  }
+
+  header p {
+    font-size: 0.85rem;
+    color: #cbd5e1;
+    margin-top: 0.15rem;
+  }
+
+  .header-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .badge-arch {
+    background: rgba(197, 155, 39, 0.2);
+    color: #fef08a;
+    border: 1px solid rgba(197, 155, 39, 0.4);
+  }
+
+  .badge-role {
+    background: rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  /* Navigation Bar / Mode Tabs */
+  .mode-nav-wrapper {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mode-nav {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+  }
+
+  .mode-tab {
+    padding: 1rem 0.2rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .mode-tab:hover {
+    color: var(--primary);
+  }
+
+  .mode-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* Interactive Toolbars */
+  .toolbar {
+    max-width: 1400px;
+    margin: 1.25rem auto 0.75rem;
+    padding: 0 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 280px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.6rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    font-size: 0.92rem;
+    outline: none;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .search-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.15);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--card);
+    color: var(--text);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-light);
+  }
+
+  .btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  /* Filter Chips */
+  .category-filter {
+    max-width: 1400px;
+    margin: 0.5rem auto 1.25rem;
+    padding: 0 1.5rem;
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--card);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .chip.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  /* Stat Metric Cards */
+  .metrics-grid {
+    max-width: 1400px;
+    margin: 0 auto 1.5rem;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.85rem;
+  }
+
+  .metric-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.9rem 1.1rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .metric-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .metric-value {
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-top: 0.2rem;
+  }
+
+  .metric-sub {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+
+  /* Main Container */
+  .main-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
+  }
+
+  /* View Sections */
+  .view-panel {
+    display: none;
+  }
+
+  .view-panel.active {
+    display: block;
+  }
+
+  /* Glossary Grid */
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .glossary-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Glossary Card */
+  .term-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  }
+
+  .term-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: #cbd5e1;
+  }
+
+  .term-card.bookmarked {
+    border-left: 4px solid var(--accent-gold);
+  }
+
+  .term-card.learned {
+    border-left: 4px solid var(--success);
+  }
+
+  .term-card.bookmarked.learned {
+    border-left: 4px solid var(--accent);
+  }
+
+  .term-header {
+    padding: 0.9rem 1.15rem;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .term-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  .term-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+  }
+
+  .term-cat-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 0.2rem 0.55rem;
+    border-radius: 12px;
+    background: var(--tag-bg);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .term-actions-top {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text-muted);
+    padding: 0.2rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s;
+  }
+
+  .icon-btn:hover {
+    color: var(--primary);
+  }
+
+  .icon-btn.active-star {
+    color: var(--accent-gold);
+  }
+
+  .toggle-indicator {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #475569;
+    transition: transform 0.2s;
+  }
+
+  .term-card.open .toggle-indicator {
+    transform: rotate(180deg);
+  }
+
+  .term-body {
+    padding: 1.15rem;
+    display: none;
+    flex-direction: column;
+    gap: 0.85rem;
+    animation: fadeIn 0.2s ease-in-out;
+  }
+
+  .term-card.open .term-body {
+    display: flex;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .term-def {
+    font-size: 0.92rem;
+    color: var(--text);
+    line-height: 1.55;
+  }
+
+  /* DE Callout block */
+  .de-box {
+    background: #f0f7ff;
+    border-left: 3px solid var(--accent);
+    padding: 0.75rem 0.9rem;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 0.84rem;
+  }
+
+  .de-box-title {
+    font-weight: 700;
+    color: #0369a1;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+  }
+
+  .de-box-text {
+    color: #1e3a8a;
+  }
+
+  /* Entity schema & Formula tags */
+  .schema-table-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.78rem;
+    color: #334155;
+    margin-right: 0.4rem;
+    margin-top: 0.3rem;
+  }
+
+  .schema-table-pill b {
+    color: var(--accent);
+  }
+
+  .formula-box {
+    background: #0f172a;
+    color: #38bdf8;
+    padding: 0.65rem 0.85rem;
+    border-radius: var(--radius-sm);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.82rem;
+    overflow-x: auto;
+  }
+
+  .formula-title {
+    color: #94a3b8;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+
+  .term-footer {
+    margin-top: auto;
+    padding: 0.65rem 1.15rem;
+    background: #fafbfc;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.8rem;
+  }
+
+  .learn-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .learn-toggle input {
+    accent-color: var(--success);
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+  }
+
+  .copy-btn {
+    border: 1px solid var(--border);
+    background: var(--card);
+    padding: 0.3rem 0.7rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+
+  .copy-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .copy-btn.copied {
+    background: var(--success);
+    color: #fff;
+    border-color: var(--success);
+  }
+
+  /* Interactive Simulator: Reinsurance Layer Tower */
+  .sim-container {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2rem;
+  }
+
+  .sim-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 1.25rem;
+  }
+
+  @media (max-width: 900px) {
+    .sim-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sim-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .input-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .input-group input, .input-group select {
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    background: var(--card);
+    color: var(--text);
+  }
+
+  .tower-display {
+    display: flex;
+    flex-direction: column-reverse;
+    border: 2px dashed #cbd5e1;
+    border-radius: var(--radius);
+    padding: 1rem;
+    min-height: 380px;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    background: #f8fafc;
+  }
+
+  .tower-layer {
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-sm);
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .layer-retention {
+    background: #475569;
+  }
+  .layer-one {
+    background: #0284c7;
+  }
+  .layer-two {
+    background: #0d9488;
+  }
+  .layer-cat {
+    background: #7c3aed;
+  }
+  .layer-uninsured {
+    background: #dc2626;
+  }
+
+  .tower-layer .payout-tag {
+    background: rgba(0,0,0,0.3);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.78rem;
+  }
+
+  /* Triangle Viewer */
+  .triangle-container {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    overflow-x: auto;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .triangle-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    text-align: right;
+  }
+
+  .triangle-table th, .triangle-table td {
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--border);
+  }
+
+  .triangle-table th {
+    background: #f1f5f9;
+    font-weight: 600;
+    color: var(--primary-dark);
+  }
+
+  .triangle-table td.header-col {
+    background: #f8fafc;
+    font-weight: 600;
+    text-align: left;
+    color: var(--primary);
+  }
+
+  .triangle-table td.projected {
+    background: #fef3c7;
+    color: #92400e;
+    font-style: italic;
+    font-weight: 600;
+  }
+
+  /* Flashcard View */
+  .flashcard-wrapper {
+    max-width: 650px;
+    margin: 2rem auto;
+    text-align: center;
+  }
+
+  .flashcard {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    box-shadow: var(--shadow-lg);
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s;
+    user-select: none;
+  }
+
+  .flashcard:hover {
+    border-color: var(--accent);
+  }
+
+  .flashcard-category {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+  }
+
+  .flashcard-term {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 1.25rem;
+  }
+
+  .flashcard-hint {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .flashcard-answer {
+    display: none;
+    font-size: 1rem;
+    color: var(--text);
+    margin-top: 1rem;
+    line-height: 1.6;
+    animation: fadeIn 0.2s;
+  }
+
+  .flashcard.flipped .flashcard-hint {
+    display: none;
+  }
+
+  .flashcard.flipped .flashcard-answer {
+    display: block;
+  }
+
+  .flashcard-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  /* Dark Mode Styles */
+  body.dark {
+    --bg: #090d16;
+    --card: #111827;
+    --text: #f3f4f6;
+    --text-muted: #9ca3af;
+    --border: #1f2937;
+    --tag-bg: #1f2937;
+    --code-bg: #030712;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+    --shadow-md: 0 4px 14px rgba(0,0,0,0.5);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.6);
+  }
+
+  body.dark .term-header {
+    background: #172033;
+  }
+  body.dark .term-footer {
+    background: #0f172a;
+  }
+  body.dark .search-input {
+    background: #111827;
+    color: #fff;
+    border-color: #374151;
+  }
+  body.dark .chip, body.dark .btn {
+    background: #111827;
+    color: #e5e7eb;
+    border-color: #374151;
+  }
+  body.dark .chip:hover, body.dark .btn:hover {
+    background: #1f2937;
+  }
+  body.dark .de-box {
+    background: rgba(3, 105, 161, 0.15);
+    border-left-color: #38bdf8;
+  }
+  body.dark .de-box-title {
+    color: #38bdf8;
+  }
+  body.dark .de-box-text {
+    color: #bae6fd;
+  }
+  body.dark .schema-table-pill {
+    background: #1f2937;
+    border-color: #374151;
+    color: #cbd5e1;
+  }
+  body.dark .triangle-table th {
+    background: #1e293b;
+    color: #e2e8f0;
+  }
+  body.dark .triangle-table td.header-col {
+    background: #162032;
+    color: #60a5fa;
+  }
+  body.dark .tower-display {
+    background: #0b1120;
+    border-color: #334155;
+  }
+
+  /* Empty state */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 1rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state h3 {
+    font-size: 1.25rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  /* Footer */
+  footer {
+    max-width: 1400px;
+    margin: 3rem auto 0;
+    padding: 2rem 1.5rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-inner">
+    <div class="brand-group">
+      <div class="brand-logo">AR</div>
+      <div>
+        <h1>Insurance &amp; Reinsurance Domain Master</h1>
+        <p>Comprehensive Architectural &amp; Domain Reference for <strong>Arch Re Senior Data Engineers</strong></p>
+      </div>
+    </div>
+    <div class="header-badges">
+      <span class="badge badge-arch">ARCH REINSURANCE LTD</span>
+      <span class="badge badge-role">ROLE: SR. DATA ENGINEER</span>
+    </div>
+  </div>
+</header>
+
+<!-- Mode Navigation -->
+<div class="mode-nav-wrapper">
+  <div class="mode-nav">
+    <button class="mode-tab active" data-view="glossary">📚 Glossary &amp; Data Models</button>
+    <button class="mode-tab" data-view="simulator">⚡ Treaty Layer Simulator</button>
+    <button class="mode-tab" data-view="triangles">📐 Actuarial Loss Triangles</button>
+    <button class="mode-tab" data-view="flashcards">🗂️ Flashcard Trainer</button>
+    <button class="mode-tab" data-view="architecture">🏛️ Arch Re Data Architecture</button>
+  </div>
+</div>
+
+<!-- Controls / Search & Filter (Visible in Glossary) -->
+<div id="glossaryControls">
+  <div class="toolbar">
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search 120+ terms, formulas, schemas (e.g. Quota Share, IBNR, Bordereau, RMS, UPR, Ceded Loss)...">
+    </div>
+    <div class="action-buttons">
+      <button class="btn" id="filterStarredBtn">⭐ Starred (<span id="starredCount">0</span>)</button>
+      <button class="btn" id="filterUnlearnedBtn">⏳ Unlearned Only</button>
+      <button class="btn" id="toggleExpandAll">Expand All</button>
+      <button class="btn btn-primary" id="darkModeToggle">🌙 Dark Mode</button>
+    </div>
+  </div>
+
+  <div class="category-filter" id="categoryFilterContainer"></div>
+
+  <!-- Metric Statistics -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-label">Total Domain Entities</div>
+      <div class="metric-value" id="statTotal">0</div>
+      <div class="metric-sub">Across 9 core sub-domains</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Mastered Terms</div>
+      <div class="metric-value" id="statLearned">0</div>
+      <div class="metric-sub" id="statLearnedPct">0% Completed</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Reinsurance Treaties</div>
+      <div class="metric-value" id="statReinsCount">0</div>
+      <div class="metric-sub">Proportional &amp; Non-Prop</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Actuarial &amp; Financial</div>
+      <div class="metric-value" id="statActuarialCount">0</div>
+      <div class="metric-sub">IBNR, Triangles, UPR, GWP</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Cat Models &amp; Tech</div>
+      <div class="metric-value" id="statDataCount">0</div>
+      <div class="metric-sub">RMS, AIR, ELT, Lakehouse</div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Views -->
+<div class="main-container">
+
+  <!-- VIEW 1: GLOSSARY -->
+  <section id="viewGlossary" class="view-panel active">
+    <div class="glossary-grid" id="glossaryGrid"></div>
+  </section>
+
+  <!-- VIEW 2: LAYER SIMULATOR -->
+  <section id="viewSimulator" class="view-panel">
+    <div class="sim-container">
+      <h2>Interactive Excess of Loss (XOL) Tower Simulator</h2>
+      <p style="color:var(--text-muted); margin-top:0.35rem; font-size:0.9rem;">
+        Understand how a catastrophe or per-risk loss cascades through a reinsurance tower. See net retention, attachment points, layer burnouts, co-participation, and reinstatement premium calculation.
+      </p>
+
+      <div class="sim-grid">
+        <div class="sim-inputs">
+          <div class="input-group">
+            <label for="grossLossInput">Gross Incurred Loss Amount ($ USD):</label>
+            <input type="number" id="grossLossInput" value="35000000" step="500000" min="0">
+          </div>
+          <div class="input-group">
+            <label for="cedantRetentionInput">Cedant Retention (Net Priority):</label>
+            <input type="number" id="cedantRetentionInput" value="5000000" step="500000">
+          </div>
+          <div class="input-group">
+            <label for="layer1LimitInput">Layer 1 Limit (XS of Retention):</label>
+            <input type="number" id="layer1LimitInput" value="10000000" step="500000">
+          </div>
+          <div class="input-group">
+            <label for="layer2LimitInput">Layer 2 Limit (XS of Layer 1):</label>
+            <input type="number" id="layer2LimitInput" value="20000000" step="500000">
+          </div>
+          <div class="input-group">
+            <label for="archShareInput">Arch Re Participation Share in Layer 2 (%):</label>
+            <input type="number" id="archShareInput" value="35" min="1" max="100">
+          </div>
+          <button class="btn btn-primary" id="recalcSimBtn" style="margin-top:0.5rem; justify-content:center;">Calculate Loss Allocation</button>
+        </div>
+
+        <div>
+          <h3 style="font-size:1rem; margin-bottom:0.75rem;">Coverage Tower Structure &amp; Recovery Waterfall</h3>
+          <div class="tower-display" id="towerDisplay">
+            <!-- Dynamically populated -->
+          </div>
+          <div style="margin-top:1rem; padding:1rem; background:#f1f5f9; border-radius:var(--radius-sm); font-size:0.85rem;" id="simSummary">
+            <!-- Payout summary -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEW 3: ACTUARIAL LOSS TRIANGLES -->
+  <section id="viewTriangles" class="view-panel">
+    <div class="triangle-container">
+      <h2>Cumulative Paid Loss Triangle &amp; Chain Ladder Projection</h2>
+      <p style="color:var(--text-muted); margin-top:0.35rem; margin-bottom:1.5rem; font-size:0.9rem;">
+        As a Senior Data Engineer at Arch Re, you will ingest transactional claims and build the data pipelines feeding actuarial valuation engines (e.g. Arius, ResQ, Python ChainLadder). This demonstrates an Accident Year (AY) x Development Month matrix.
+      </p>
+
+      <table class="triangle-table">
+        <thead>
+          <tr>
+            <th style="text-align:left;">Accident Year (AY)</th>
+            <th>12 Months</th>
+            <th>24 Months</th>
+            <th>36 Months</th>
+            <th>48 Months</th>
+            <th>Ultimate Loss (Est.)</th>
+            <th>Indicated IBNR Reserve</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="header-col">2021</td>
+            <td>$14,500,000</td>
+            <td>$22,800,000</td>
+            <td>$27,100,000</td>
+            <td>$29,400,000</td>
+            <td>$29,400,000</td>
+            <td>$0 (Fully Developed)</td>
+          </tr>
+          <tr>
+            <td class="header-col">2022</td>
+            <td>$16,200,000</td>
+            <td>$25,300,000</td>
+            <td>$30,500,000</td>
+            <td class="projected">$33,092,500*</td>
+            <td>$33,092,500</td>
+            <td>$2,592,500</td>
+          </tr>
+          <tr>
+            <td class="header-col">2023</td>
+            <td>$18,400,000</td>
+            <td>$28,800,000</td>
+            <td class="projected">$34,704,000*</td>
+            <td class="projected">$37,653,840*</td>
+            <td>$37,653,840</td>
+            <td>$8,853,840</td>
+          </tr>
+          <tr>
+            <td class="header-col">2024</td>
+            <td>$21,000,000</td>
+            <td class="projected">$32,865,000*</td>
+            <td class="projected">$39,602,325*</td>
+            <td class="projected">$42,968,522*</td>
+            <td>$42,968,522</td>
+            <td>$21,968,522</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:1.5rem; background:#eff6ff; padding:1.25rem; border-radius:var(--radius-sm); border-left:4px solid var(--accent); font-size:0.88rem; color:#1e3a8a;">
+        <strong>Data Engineer Takeaway for Triangle Pipelines:</strong>
+        <ul style="margin-left:1.5rem; margin-top:0.5rem; line-height:1.6;">
+          <li><b>Dimension Keys:</b> Loss triangles are aggregated along <code>(Underwriting_Year or Accident_Year)</code> on the vertical axis and <code>Development_Lag_Months = DATEDIFF('month', Loss_Date, Evaluation_Date)</code> on the horizontal.</li>
+          <li><b>Triangle Grain:</b> Always partition by <code>Line_of_Business (LOB)</code>, <code>Reinsurance_Treaty_Type</code>, and <code>Gross_vs_Ceded_vs_Net</code>. Mixing long-tail casualty with property cat will break the actuarial link ratio algorithms.</li>
+          <li><b>Restatement &amp; Snapshots:</b> Actuaries require frozen historical triangle snapshots (month-end / quarter-end valuation dates) to satisfy SOX and external audit requirements.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEW 4: FLASHCARD TRAINER -->
+  <section id="viewFlashcards" class="view-panel">
+    <div class="flashcard-wrapper">
+      <div class="flashcard" id="flashcardElement">
+        <div class="flashcard-category" id="fcCategory">REINSURANCE TREATY</div>
+        <div class="flashcard-term" id="fcTerm">Quota Share</div>
+        <div class="flashcard-hint">Click card to reveal definition &amp; schema mapping ↺</div>
+        <div class="flashcard-answer" id="fcAnswer">
+          A proportional treaty where the reinsurer accepts a fixed agreed percentage of every policy premium and assumes the identical percentage of all covered losses.
+        </div>
+      </div>
+      <div class="flashcard-controls">
+        <button class="btn" id="fcPrevBtn">◀ Previous</button>
+        <button class="btn btn-primary" id="fcFlipBtn">Reveal Answer</button>
+        <button class="btn" id="fcNextBtn">Next Term ▶</button>
+        <button class="btn" id="fcRandomBtn">🎲 Shuffle</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEW 5: ARCH RE DATA ARCHITECTURE -->
+  <section id="viewArchitecture" class="view-panel">
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:2rem; box-shadow:var(--shadow-sm);">
+      <h2 style="color:var(--primary); margin-bottom:0.75rem;">Arch Re Data Engineering Architecture &amp; Core Pipeline Blueprint</h2>
+      <p style="color:var(--text-muted); font-size:0.92rem; margin-bottom:1.5rem;">
+        An overview of the end-to-end data pipelines, ingestion sources, core schemas, and reconciliations you will encounter as a Senior Data Engineer at Arch Re.
+      </p>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;">
+        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius-sm); padding:1.25rem;">
+          <h3 style="color:#0284c7; font-size:1rem; margin-bottom:0.5rem;">1. Source Ingestion Layer (Bronze)</h3>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.75rem;">Messy, disparate external &amp; internal feeds:</p>
+          <ul style="font-size:0.85rem; line-height:1.6; margin-left:1.2rem;">
+            <li><b>Broker Bordereaux:</b> Excel/CSV/PDF files sent by Aon, Guy Carpenter, Gallagher Re for monthly/quarterly premium &amp; claims.</li>
+            <li><b>ACORD XML / e-Messaging:</b> Standardized XML/JSON messages (B2B Ruschlikon standards).</li>
+            <li><b>Underwriting &amp; Pricing Systems:</b> Internal pricing models (Python/R, actuarial workbooks, RMS/AIR catastrophe event loss tables).</li>
+            <li><b>Policy Administration Systems (PAS):</b> Treaty slips, endorsements, contract inception/expiration dates.</li>
+          </ul>
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius-sm); padding:1.25rem;">
+          <h3 style="color:#059669; font-size:1rem; margin-bottom:0.5rem;">2. Normalized Enterprise Model (Silver)</h3>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.75rem;">Cleansed, validated, and reconciled data lakehouse tables:</p>
+          <ul style="font-size:0.85rem; line-height:1.6; margin-left:1.2rem;">
+            <li><code>dim_treaty_contract</code>: SCD Type 2 handling endorsements and mid-term limit changes.</li>
+            <li><code>dim_contract_section_layer</code>: Attachment points, limits, reinstated terms, ceding commissions.</li>
+            <li><code>fact_premium_movement</code>: Gross Written, Unearned, Ceded, Ceding Commission, and Pipeline estimates.</li>
+            <li><code>fact_claim_movement</code>: Paid claims, case reserves, ALAE/ULAE expense movements, salvage/subrogation.</li>
+            <li><code>dim_cat_event</code>: Peril, geographic footprint, industry loss identifier (PCS / PERILS AG).</li>
+          </ul>
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius-sm); padding:1.25rem;">
+          <h3 style="color:#7c3aed; font-size:1rem; margin-bottom:0.5rem;">3. Analytical &amp; Regulatory Marts (Gold)</h3>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.75rem;">High-performance columnar cubes &amp; actuarial data stores:</p>
+          <ul style="font-size:0.85rem; line-height:1.6; margin-left:1.2rem;">
+            <li><b>Actuarial Reserving Mart:</b> Aggregated cumulative loss triangles by AY, LOB, Treaty for IBNR estimation.</li>
+            <li><b>Underwriting Performance:</b> Combined ratios, burning costs, loss ratios by broker, cedant, and class of business.</li>
+            <li><b>Bermuda BMA (BSCR) &amp; Solvency II Mart:</b> Capital adequacy calculations, technical reserves, counterparty credit risk.</li>
+            <li><b>US GAAP &amp; IFRS 17 Engine:</b> Contractual Service Margin (CSM), discount rates, and risk adjustment calculations.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem; background:#fff7ed; border-left:4px solid #f97316; padding:1.25rem; border-radius:var(--radius-sm); font-size:0.88rem; color:#7c2d12;">
+        <strong>Senior Data Engineer Mission-Critical Rules at Arch Re:</strong>
+        <ol style="margin-left:1.5rem; margin-top:0.5rem; line-height:1.6;">
+          <li><b>Tri-Currency Accounting:</b> Never aggregate monetary values without normalizing currency! Every record has: <code>Original_Currency</code> (e.g. EUR, JPY), <code>Settlement_Currency</code> (GBP), and <code>Base_Ledger_Currency</code> (USD) with conversion date rates.</li>
+          <li><b>Late Arriving Claims &amp; Restatements:</b> A claim occurring in 2021 can be reported in 2024. Your pipelines must distinguish between <code>Accident_Date</code>, <code>Reported_Date</code>, and <code>Accounting_Entry_Date</code>.</li>
+          <li><b>Contractual Cascades:</b> A catastrophe claim on a cedant's policy passes through a Quota Share treaty, then an Excess of Loss tower, and finally gets ceded out to Arch Re's Retrocessionaires. Lineage tracking is vital.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <p><strong>Arch Re Knowledge Base &amp; Data Engineering Reference</strong> · Built for onboarding Senior Data Engineers</p>
+  <p style="margin-top:0.25rem; font-size:0.8rem;">Contains 120+ domain entities, actuarial metrics, and schema designs · All data stored locally in your browser.</p>
+</footer>
+
+<!-- JavaScript Application Logic -->
+<script>
+/* ------------------------------------------------------------------
+   COMPREHENSIVE DATASET (120+ Terms with Data Engineering Schemas)
+   ------------------------------------------------------------------ */
+const enterpriseGlossary = [
+  /* ================= 1. PRIMARY INSURANCE CORE ================= */
+  {
+    id: "ins-01",
+    term: "Primary Insurance (Direct Insurance)",
+    category: "Primary Insurance",
+    definition: "The primary contractual agreement between a policyholder (individual or commercial enterprise) and a direct insurer (carrier), where the carrier agrees to indemnify the insured against financial loss resulting from specified perils in exchange for a premium.",
+    deInsight: "Source of raw policy and claims feeds. At Arch Re, direct insurance data enters via ceding company bordereaux or MGA (Managing General Agent) data feeds.",
+    schema: "raw_policy_header, dim_policyholder",
+    formula: "Gross Loss = Sum Insured - Deductible (subject to policy sub-limits)"
+  },
+  {
+    id: "ins-02",
+    term: "Insured / Policyholder",
+    category: "Primary Insurance",
+    definition: "The legal entity or person covered under an insurance contract who owns the rights to indemnity or proceeds following a covered loss.",
+    deInsight: "Requires Master Data Management (MDM) entity resolution. The same commercial insured (e.g., Apple Inc.) may appear under dozens of cedant bordereaux under varying spelling variations.",
+    schema: "dim_party (Party_Type = 'Insured', Tax_ID, DUNS_Number)",
+    formula: null
+  },
+  {
+    id: "ins-03",
+    term: "Insurer / Carrier (Cedant)",
+    category: "Primary Insurance",
+    definition: "The primary insurance company licensed to write policies, collect premiums, and settle claims directly with original insureds.",
+    deInsight: "In reinsurance data models, this entity is almost always referred to as the 'Cedant' or 'Ceding Company'. Join key: cedant_id / company_code.",
+    schema: "dim_cedant (Cedant_Code, AM_Best_Rating, Country_Code)",
+    formula: null
+  },
+  {
+    id: "ins-04",
+    term: "Gross Written Premium (GWP)",
+    category: "Financial & Accounting",
+    definition: "The total premium written by an insurer or reinsurer over a specified accounting period before deductions for reinsurance cessions, broker commissions, or cancellations.",
+    deInsight: "Foundational revenue measure. Must never be confused with Earned Premium. In pipelines, GWP is captured at contract inception and upon any endorsement (increase or decrease).",
+    schema: "fact_premium_movement (Transaction_Type = 'GWP', Premium_Amt)",
+    formula: "GWP = Direct Written Premium + Inward Reinsurance Assumed Premium"
+  },
+  {
+    id: "ins-05",
+    term: "Net Written Premium (NWP)",
+    category: "Financial & Accounting",
+    definition: "Gross Written Premium minus premium ceded to reinsurers (or retrocessionaires in the case of a reinsurer). Represents the risk kept on the carrier's own balance sheet.",
+    deInsight: "Crucial metric for solvency and leverage ratios. Pipeline must accurately pair inward assumed premium with outward ceded retrocession premium.",
+    schema: "fact_financial_summary (Gross_WP, Ceded_WP, Net_WP)",
+    formula: "NWP = Gross Written Premium - Outward Ceded Reinsurance Premium"
+  },
+  {
+    id: "ins-06",
+    term: "Gross Earned Premium (GEP)",
+    category: "Financial & Accounting",
+    definition: "The portion of written premium that corresponds to the expired portion of the policy coverage period. Under US GAAP/IFRS, revenue cannot be recognized until exposure is earned over time.",
+    deInsight: "Calculated via continuous pro-rata daily earning engines (365-day split) or 24ths method for monthly bordereaux. Pipeline must run monthly earning schedules.",
+    schema: "fact_premium_earned_monthly (Accounting_Month, Earned_Amt)",
+    formula: "GEP = GWP + Beginning Unearned Premium Reserve (UPR) - Ending UPR"
+  },
+  {
+    id: "ins-07",
+    term: "Unearned Premium Reserve (UPR / UEPR)",
+    category: "Financial & Accounting",
+    definition: "A balance sheet liability representing the portion of written premium collected for periods of coverage that extend into future accounting periods.",
+    deInsight: "Heavy calculation in financial ETL. If a 1-year policy is written on Oct 1 for $1,200, at Dec 31 (92 days elapsed), $302.47 is earned and $897.53 is in UPR.",
+    schema: "fact_upr_balance (Valuation_Date, Policy_ID, UPR_Amount)",
+    formula: "UPR = Written Premium * ((Policy_End_Date - Valuation_Date) / Total_Policy_Days)"
+  },
+  {
+    id: "ins-08",
+    term: "Deductible / Self-Insured Retention (SIR)",
+    category: "Primary Insurance",
+    definition: "The first dollar amount of a covered loss that the policyholder must pay before the insurance coverage begins to indemnify.",
+    deInsight: "Critical numeric attribute in claim validation logic. Direct claims below the deductible must be filtered or flagged as non-indemnified in ETL ingestion.",
+    schema: "dim_policy_coverage (Deductible_Amount, Deductible_Type)",
+    formula: "Insurer Paid Loss = Max(0, Incurred Claim - Deductible)"
+  },
+  {
+    id: "ins-09",
+    term: "Policy Limit / Sum Insured",
+    category: "Primary Insurance",
+    definition: "The maximum amount the insurer is obligated to pay for a covered loss, either per occurrence, per risk, or in the aggregate over the policy term.",
+    deInsight: "Boundary check in data quality pipelines. A paid claim should rarely exceed the policy limit unless defense costs inside/outside limits apply.",
+    schema: "dim_policy_coverage (Per_Occurrence_Limit, Aggregate_Limit)",
+    formula: "Coverage Payout = Min(Policy Limit, Max(0, Loss - Deductible))"
+  },
+  {
+    id: "ins-10",
+    term: "Paid Losses",
+    category: "Financial & Accounting",
+    definition: "The cumulative actual cash disbursements made to claimants to settle indemnified claims during a given period.",
+    deInsight: "Cash flow fact table. Join key to bank/treasury settlement ledgers. Must be matched with recovery payments (salvage, subrogation).",
+    schema: "fact_claim_transaction (Trans_Type = 'PAID_LOSS', Paid_Amount)",
+    formula: "Net Paid Loss = Gross Paid Loss - Salvage - Subrogation Recoveries"
+  },
+  {
+    id: "ins-11",
+    term: "Case Reserves",
+    category: "Financial & Accounting",
+    definition: "An estimate of the unpaid future settlement cost for an individual claim that has already been reported to the insurer, established by claims adjusters.",
+    deInsight: "Constantly changing state variable. Requires SCD Type 2 or snapshot tables to track how adjusters revise reserve values over time.",
+    schema: "fact_claim_snapshot (Claim_ID, Snapshot_Date, Case_Reserve_Amt)",
+    formula: "Reported Losses = Cumulative Paid Losses + Current Case Reserves"
+  },
+  {
+    id: "ins-12",
+    term: "Incurred But Not Reported (IBNR)",
+    category: "Actuarial & Reserving",
+    definition: "An actuarial reserve liability established on the balance sheet for claims that have already occurred as of the valuation date but have not yet been reported to the insurer.",
+    deInsight: "IBNR is NOT captured at the individual claim level; it is modeled at the portfolio/treaty level by actuaries using loss development triangles and allocated down to business units.",
+    schema: "fact_actuarial_reserve (Accident_Year, LOB_ID, IBNR_Reserve_Amt)",
+    formula: "Total Incurred Loss = Paid Losses + Case Reserves + IBNR"
+  },
+  {
+    id: "ins-13",
+    term: "Reported But Not Settled (RBNS) / Incurred But Not Enough Reserved (IBNER)",
+    category: "Actuarial & Reserving",
+    definition: "RBNS represents claims known to the insurer that remain open. IBNER represents actuarial adjustments reflecting the historical tendency of initial case reserves to develop upwards.",
+    deInsight: "In actuarial data engineering, IBNR is often split into 'Pure IBNR' (unreported claims) and 'IBNER' (case reserve development on open claims).",
+    schema: "fact_actuarial_ibnr_breakdown (Pure_IBNR_Amt, IBNER_Amt)",
+    formula: "Total IBNR = Pure IBNR + IBNER"
+  },
+  {
+    id: "ins-14",
+    term: "Loss Ratio",
+    category: "Financial & Accounting",
+    definition: "The percentage of earned premiums used to pay incurred losses and loss adjustment expenses. The single most common measure of underwriting underwriting profitability.",
+    deInsight: "A Loss Ratio > 100% means claims exceed earned revenue. Data pipelines must align losses and premiums by the identical accounting period or accident year.",
+    schema: "agg_underwriting_kpis (Loss_Ratio_Pct)",
+    formula: "Loss Ratio = (Incurred Losses + Loss Adjustment Expenses) / Net Earned Premium"
+  },
+  {
+    id: "ins-15",
+    term: "Expense Ratio",
+    category: "Financial & Accounting",
+    definition: "The ratio of operating expenses (commissions, broker acquisition costs, staff salaries, technology overhead) to written or earned premium.",
+    deInsight: "In reinsurance, ceding commission paid back to the cedant constitutes a primary component of the expense ratio.",
+    schema: "agg_underwriting_kpis (Expense_Ratio_Pct)",
+    formula: "Expense Ratio = Underwriting & Acquisition Expenses / Written (or Earned) Premium"
+  },
+  {
+    id: "ins-16",
+    term: "Combined Ratio",
+    category: "Financial & Accounting",
+    definition: "The sum of the Loss Ratio and the Expense Ratio. A combined ratio below 100% indicates underwriting profitability before investment income; above 100% indicates an underwriting loss.",
+    deInsight: "The premier benchmark presented in Arch Capital Group quarterly earnings calls. Executive dashboards strictly track combined ratio by segment.",
+    schema: "agg_executive_metrics (Combined_Ratio_Pct)",
+    formula: "Combined Ratio = Loss Ratio + Expense Ratio"
+  },
+
+  /* ================= 2. REINSURANCE CORE CONCEPTS ================= */
+  {
+    id: "re-01",
+    term: "Reinsurance",
+    category: "Reinsurance Foundations",
+    definition: "A contract where one insurance company (the reinsurer, e.g., Arch Re) agrees to indemnify another insurance company (the ceding company / cedant) against all or part of the primary loss exposure written by that insurer.",
+    deInsight: "Reinsurance solves four main insurer objectives: capacity expansion, catastrophe protection, earnings stabilization, and capital/surplus relief.",
+    schema: "dim_treaty, dim_contract_header",
+    formula: "Reinsurer Recovery = F(Incurred Ceded Loss, Treaty Structure Terms)"
+  },
+  {
+    id: "re-02",
+    term: "Ceding Company (Cedant)",
+    category: "Reinsurance Foundations",
+    definition: "The direct insurance carrier that originates the policies and transfers (cedes) a portion of its portfolio risk and associated premium to a reinsurer.",
+    deInsight: "Primary dimension table in Arch Re's data warehouse. Crucial for counterparty credit risk and exposure accumulation tracking.",
+    schema: "dim_cedant (Cedant_ID, Legal_Name, Ultimate_Parent_Code)",
+    formula: null
+  },
+  {
+    id: "re-03",
+    term: "Reinsurer (Arch Re)",
+    category: "Reinsurance Foundations",
+    definition: "The entity assuming risk from the ceding company in exchange for reinsurance premium and agreeing to indemnify the cedant according to the contract slip terms.",
+    deInsight: "Internal legal entity dimension (Arch Reinsurance Ltd - Bermuda, Arch Re Europe - Dublin, Arch Re US - Morristown, Arch Re Lloyd's Syndicate 2012).",
+    schema: "dim_internal_entity (Legal_Entity_Code, Operating_Unit)",
+    formula: null
+  },
+  {
+    id: "re-04",
+    term: "Cession",
+    category: "Reinsurance Foundations",
+    definition: "The specific transaction or unit of risk, exposure, or premium transferred from the cedant to the reinsurer under a treaty or facultative certificate.",
+    deInsight: "In transactional data, a cession record ties an individual policy or premium transaction to a specific reinsurance treaty section.",
+    schema: "fact_cession_movement (Cession_ID, Treaty_ID, Section_ID, Ceded_Premium)",
+    formula: "Ceded Premium = Gross Premium * Cession Percentage"
+  },
+  {
+    id: "re-05",
+    term: "Retention (Net Priority)",
+    category: "Reinsurance Foundations",
+    definition: "The amount of risk or loss that the ceding insurer retains for its own balance sheet account before reinsurance coverage responds.",
+    deInsight: "In non-proportional treaties, retention is the Attachment Point. In proportional treaties, it is the retained percentage or retention line limit.",
+    schema: "dim_treaty_layer (Retention_Amt, Retention_Type)",
+    formula: "Cedant Net Loss = Min(Incurred Loss, Retention)"
+  },
+  {
+    id: "re-06",
+    term: "Treaty Reinsurance",
+    category: "Reinsurance Foundations",
+    definition: "An overarching standing agreement where the reinsurer automatically assumes all qualifying risks written by the ceding company that fall within the defined treaty scope without individual risk underwriting.",
+    deInsight: "Forms the bulk of Arch Re's volume. Data ingestion is batched via periodic (monthly or quarterly) bordereau statements rather than single-policy APIs.",
+    schema: "dim_treaty (Treaty_Code, Treaty_Type = 'TREATY', Inception_Date)",
+    formula: null
+  },
+  {
+    id: "re-07",
+    term: "Facultative Reinsurance (Fac)",
+    category: "Reinsurance Foundations",
+    definition: "Reinsurance negotiated on an individual, policy-by-policy basis where the reinsurer retains the legal right (faculty) to accept or decline each specific risk submitted by the cedant.",
+    deInsight: "High-value, individual risk grain (e.g. insuring a single oil refinery or commercial skyscraper). Data schema resembles a direct policy database with specific location coordinates.",
+    schema: "dim_fac_certificate (Certificate_No, Insured_Name, Location_Geo)",
+    formula: null
+  },
+  {
+    id: "re-08",
+    term: "Facultative Obligatory (Fac Oblig)",
+    category: "Reinsurance Foundations",
+    definition: "A hybrid reinsurance arrangement where the ceding company is not obligated to cede every risk, but if it chooses to submit a risk meeting agreed criteria, the reinsurer is legally bound to accept it.",
+    deInsight: "Common in property treaties. Pipeline must validate whether submitted risks fall within the pre-agreed maximum sum insured and peril boundaries.",
+    schema: "dim_treaty (Sub_Type = 'FAC_OBLIG', Binding_Rules_JSON)",
+    formula: null
+  },
+
+  /* ================= 3. PROPORTIONAL REINSURANCE ================= */
+  {
+    id: "prop-01",
+    term: "Proportional (Pro Rata) Reinsurance",
+    category: "Proportional Treaties",
+    definition: "Reinsurance arrangements where the reinsurer shares premiums and losses in an identical, agreed mathematical proportion with the ceding company.",
+    deInsight: "Simplifies loss calculation pipelines. If Arch Re writes a 20% proportional share, it receives 20% of premium (less ceding commission) and pays exactly 20% of all claims.",
+    schema: "fact_proportional_statement (Ceded_Pct, Premium_Share, Loss_Share)",
+    formula: "Reinsurer Loss Share = Gross Incurred Loss * Cession Percentage"
+  },
+  {
+    id: "prop-02",
+    term: "Quota Share (QS)",
+    category: "Proportional Treaties",
+    definition: "The purest form of proportional treaty where the reinsurer accepts a fixed pre-agreed percentage (e.g., 30%) of every single policy written within the defined portfolio from the very first dollar.",
+    deInsight: "Heavily utilized by growing carriers seeking capital relief. Pipeline joins each policy bordereau row to the QS treaty and multiplies premium and loss by the treaty percentage.",
+    schema: "dim_treaty_section (Structure = 'QUOTA_SHARE', Quota_Share_Pct)",
+    formula: "Arch Re Premium = Gross Written Premium * QS_Pct * (1 - Ceding_Commission_Pct)"
+  },
+  {
+    id: "prop-03",
+    term: "Surplus Share (Surplus Treaty)",
+    category: "Proportional Treaties",
+    definition: "A proportional treaty where the cedant retains a fixed monetary amount per risk (one 'Line', e.g. $500k), and cedes the excess above that retention up to a specified multiple of lines (e.g. 9 Lines = $4.5M).",
+    deInsight: "Algorithmically dynamic cession percentage per policy! Unlike Quota Share, the cession ratio changes for every single risk based on its total insured value (TIV).",
+    schema: "fact_surplus_allocation (Policy_TIV, Retention_Line, Cession_Ratio)",
+    formula: "Cession % = Max(0, (Sum Insured - Retention Line) / Sum Insured)"
+  },
+  {
+    id: "prop-04",
+    term: "Line (Retention Line)",
+    category: "Proportional Treaties",
+    definition: "The baseline unit of dollar retention in a Surplus Share treaty. For instance, if the cedant's line is $250,000, a '4-Line Surplus Treaty' provides $1,000,000 of reinsurance capacity above retention.",
+    deInsight: "Stored as an attribute in contract master data. ETL must calculate the surplus proportion per risk: Ceded Ratio = Min(Surplus Lines * Line, TIV - Retention) / TIV.",
+    schema: "dim_treaty_section (Line_Amount, Number_Of_Lines)",
+    formula: "Max Treaty Capacity = Line Amount * Number of Lines"
+  },
+  {
+    id: "prop-05",
+    term: "Ceding Commission",
+    category: "Proportional Treaties",
+    definition: "A fee paid by the reinsurer to the ceding company in a proportional treaty to compensate the cedant for its original policy acquisition expenses (broker fees, sales commissions, underwriting costs).",
+    deInsight: "Direct contra-revenue or expense in reinsurance accounting. Reinsurers often settle accounts net of ceding commission.",
+    schema: "fact_premium_movement (Ceding_Commission_Pct, Ceding_Commission_Amt)",
+    formula: "Net Payable Premium = Gross Ceded Premium * (1 - Ceding Commission %)"
+  },
+  {
+    id: "prop-06",
+    term: "Sliding Scale Commission",
+    category: "Proportional Treaties",
+    definition: "A ceding commission structure where the final commission percentage varies inversely with the treaty's actual loss ratio—increasing if losses are low and decreasing if losses are high.",
+    deInsight: "Requires retroactive settlement pipeline adjustments at end of treaty year. ETL must compute the year-end loss ratio and recalculate the historical commission payable.",
+    schema: "dim_commission_scale (Min_Loss_Ratio, Max_Loss_Ratio, Prov_Comm_Pct)",
+    formula: "Commission % = Base Commission - Factor * (Actual Loss Ratio - Target Loss Ratio)"
+  },
+  {
+    id: "prop-07",
+    term: "Profit Commission (Contingent Commission)",
+    category: "Proportional Treaties",
+    definition: "An additional contractual bonus paid by the reinsurer to the ceding company if the treaty produces an underwriting profit after deducting losses, expenses, and reinsurer margin.",
+    deInsight: "Complex actuarial-accounting reconciliation pipeline. Re-evaluated over multiple subsequent development years as open claims settle.",
+    schema: "fact_profit_commission_payout (Contract_Year, Profit_Commission_Amt)",
+    formula: "Profit Commission = Profit Share % * (Ceded Premium - Ceded Losses - Reinsurer Fee)"
+  },
+  {
+    id: "prop-08",
+    term: "Cash Loss Clause",
+    category: "Proportional Treaties",
+    definition: "A contractual provision allowing the ceding company to demand immediate reimbursement from the reinsurer for large claims exceeding a specified dollar threshold, without waiting for the normal quarterly bordereau settlement.",
+    deInsight: "Triggers out-of-cycle cash disbursement pipelines. Requires automated alerts in claims ingestion when a single loss breaches the cash loss threshold.",
+    schema: "dim_treaty_clause (Cash_Loss_Threshold_USD, Settlement_Days_Limit)",
+    formula: "If Single_Claim_Recovery > Cash_Loss_Threshold -> Immediate Cash Call"
+  },
+
+  /* ================= 4. NON-PROPORTIONAL REINSURANCE ================= */
+  {
+    id: "np-01",
+    term: "Non-Proportional (Excess of Loss / XOL) Reinsurance",
+    category: "Non-Proportional Treaties",
+    definition: "Reinsurance where the reinsurer agrees to pay losses only when they exceed the ceding company's retention or attachment point, up to a specified layer limit. Premium is priced independently, not as a pro-rata share.",
+    deInsight: "Core focus of Arch Re's Property & Casualty treaty teams. The data architecture models XOL programs as stacked 'Towers' composed of multiple layers.",
+    schema: "dim_treaty_layer (Layer_Number, Attachment_Point, Layer_Limit)",
+    formula: "Reinsurance Payout = Min(Layer Limit, Max(0, Incurred Loss - Attachment Point))"
+  },
+  {
+    id: "np-02",
+    term: "Attachment Point (Priority)",
+    category: "Non-Proportional Treaties",
+    definition: "The exact dollar threshold of loss at which a reinsurance layer begins to pay. All losses beneath this threshold are absorbed by the cedant or underlying lower layers.",
+    deInsight: "Numeric lower boundary condition in loss allocation engines. If Attachment = $10M and Limit = $15M, the layer is not breached until loss > $10M.",
+    schema: "dim_treaty_layer (Attachment_Point_USD)",
+    formula: "Layer Incurred = Max(0, Incurred Loss - Attachment Point)"
+  },
+  {
+    id: "np-03",
+    term: "Layer Limit",
+    category: "Non-Proportional Treaties",
+    definition: "The maximum dollar amount payable by the reinsurer for a single occurrence or in the aggregate under that specific treaty layer.",
+    deInsight: "Upper boundary condition. Together with the attachment point, it defines the layer span: e.g. '$10M excess of $10M' covers losses between $10M and $20M.",
+    schema: "dim_treaty_layer (Layer_Limit_USD)",
+    formula: "Exhaustion Point = Attachment Point + Layer Limit"
+  },
+  {
+    id: "np-04",
+    term: "Exhaustion Point",
+    category: "Non-Proportional Treaties",
+    definition: "The dollar level of loss at which a reinsurance layer is completely burned out and its coverage is depleted.",
+    deInsight: "Calculated column in layer dimensions. Any loss exceeding the exhaustion point spills over into the next layer above it or returns to the cedant if uninsured.",
+    schema: "dim_treaty_layer (Exhaustion_Point = Attachment_Point + Layer_Limit)",
+    formula: "Exhaustion Point = Attachment Point + Limit"
+  },
+  {
+    id: "np-05",
+    term: "Excess of Loss per Risk (Working XL / WXL)",
+    category: "Non-Proportional Treaties",
+    definition: "Non-proportional coverage that protects the ceding company against large individual claims arising from a single insured risk (e.g., a massive fire at an individual commercial warehouse).",
+    deInsight: "Evaluated at the individual risk/policy level. Requires joining claims to policy schedule tables to ensure losses from different locations are not aggregated together.",
+    schema: "dim_treaty (Treaty_Subtype = 'WXL_PER_RISK')",
+    formula: "Recovery = Min(Limit, Max(0, Single_Risk_Loss - Attachment))"
+  },
+  {
+    id: "np-06",
+    term: "Catastrophe Excess of Loss (Cat XL / Occ XL)",
+    category: "Non-Proportional Treaties",
+    definition: "Excess of loss coverage protecting the cedant against the accumulation of losses arising from a single catastrophic event (hurricane, earthquake, flood, riot) affecting multiple insured risks.",
+    deInsight: "Heart of property reinsurance. Relies on 'Event Loss Aggregation' pipelines where hundreds or thousands of individual claims are grouped by a single Catastrophe Event Code.",
+    schema: "dim_treaty (Treaty_Subtype = 'CAT_XL'), fact_claim (Cat_Event_Code)",
+    formula: "Cat Recovery = Min(Limit, Max(0, Sum(Event Claims) - Cat Attachment))"
+  },
+  {
+    id: "np-07",
+    term: "Aggregate Excess of Loss (Stop Loss)",
+    category: "Non-Proportional Treaties",
+    definition: "Reinsurance that attaches when the ceding company's total aggregate losses across an entire underwriting year exceed an agreed dollar amount or a specific loss ratio percentage (e.g. losses exceeding 80% loss ratio).",
+    deInsight: "Protects against frequency rather than single large severity. Pipeline evaluates cumulative portfolio losses across the entire accounting period.",
+    schema: "dim_treaty (Treaty_Subtype = 'STOP_LOSS', Attachment_Loss_Ratio_Pct)",
+    formula: "Recovery = Min(Agg Limit, Max(0, Total Annual Losses - (Earned Premium * Attachment %)))"
+  },
+  {
+    id: "np-08",
+    term: "Reinstatement & Reinstatement Premium",
+    category: "Non-Proportional Treaties",
+    definition: "A contractual mechanism that restores depleted limit after a loss has occurred, allowing the layer to pay for subsequent events. The cedant pays a reinstatement premium for this restored protection.",
+    deInsight: "Vital billing logic in reinsurance systems. Pipelines must calculate pro-rata as to amount (loss/limit) and pro-rata as to time (remaining days/365).",
+    schema: "fact_reinstatement_billing (Event_ID, Restored_Limit, Reinstatement_Premium)",
+    formula: "Reinstatement Premium = Original Premium * (Loss Paid / Limit) * (Remaining Days / 365)"
+  },
+  {
+    id: "np-09",
+    term: "Hours Clause (Event Definition)",
+    category: "Non-Proportional Treaties",
+    definition: "A clause defining the maximum duration in consecutive hours that claims from a single catastrophic event can be aggregated and treated as one occurrence (e.g., 72 hours for hurricanes, 168 hours for winter storms).",
+    deInsight: "Algorithmic challenge in claims ETL! Data engineers build 'Hours Window Clustering' algorithms to optimize or validate which consecutive hours maximize/match legal event recovery.",
+    schema: "dim_treaty_clause (Peril_Code, Hours_Duration = 72)",
+    formula: "Claim Timestamp Between Window_Start AND (Window_Start + Interval '72' Hours)"
+  },
+  {
+    id: "np-10",
+    term: "Co-participation (Co-insurance in Layer)",
+    category: "Non-Proportional Treaties",
+    definition: "A provision requiring the ceding company to retain a small percentage (e.g., 5% or 10%) of losses within the reinsurance layer, aligning incentives so the cedant continues to aggressively adjust claims.",
+    deInsight: "Calculation modifier. If Arch Re writes 100% of a layer but the treaty specifies 10% cedant co-participation, the reinsurers only pay 90% of the layer payout.",
+    schema: "dim_treaty_layer (Cedant_Co_Participation_Pct = 0.10)",
+    formula: "Total Reinsurer Payout = Layer Incurred * (1 - Cedant Co-participation %)"
+  },
+  {
+    id: "np-11",
+    term: "Minimum and Deposit Premium (M&D)",
+    category: "Non-Proportional Treaties",
+    definition: "The upfront deposit premium paid by the cedant at treaty inception. At the end of the year, the final premium is adjusted based on actual subject written premium, but cannot fall below the guaranteed minimum.",
+    deInsight: "Pipeline tracks both deposit invoices and year-end adjustable premium true-ups. Join key: treaty_id + adjustment_period.",
+    schema: "fact_premium_deposit (Deposit_Amount, Minimum_Premium, Final_Adjusted_Premium)",
+    formula: "Final Premium = Max(Minimum Premium, Actual Subject Premium * Treaty Rate %)"
+  },
+
+  /* ================= 5. RETROCESSION & ALTERNATIVE CAPITAL ================= */
+  {
+    id: "retro-01",
+    term: "Retrocession",
+    category: "Retrocession & Capital Markets",
+    definition: "The practice where a reinsurance company (like Arch Re) purchases reinsurance protection for its own assumed risk portfolio from another reinsurer (the retrocessionaire).",
+    deInsight: "Crucial for net risk management at Arch Re. In pipelines, assumed business flows inward, and retrocession tables model the outward risk transfer.",
+    schema: "dim_retro_treaty, fact_retro_cession_outward",
+    formula: "Arch Re Net Incurred = Assumed Incurred Losses - Retrocession Recoveries"
+  },
+  {
+    id: "retro-02",
+    term: "Retrocedent",
+    category: "Retrocession & Capital Markets",
+    definition: "The reinsurer that cedes business to a retrocessionaire (e.g., Arch Re acting as a buyer of retrocessional cover).",
+    deInsight: "Role identifier in transaction pipelines. Arch Re is a Cedant in inward reinsurance and a Retrocedent in outward retrocession.",
+    schema: "dim_counterparty (Role = 'Retrocedent')",
+    formula: null
+  },
+  {
+    id: "retro-03",
+    term: "Retrocessionaire",
+    category: "Retrocession & Capital Markets",
+    definition: "The reinsurance entity that assumes risk from a retrocedent under a retrocession agreement.",
+    deInsight: "Dimension for managing counterparty exposure and collateral letters of credit (LOC).",
+    schema: "dim_retrocessionaire (Retro_Entity_ID, Collateral_Type, Credit_Rating)",
+    formula: null
+  },
+  {
+    id: "retro-04",
+    term: "Insurance-Linked Securities (ILS) & Cat Bonds (144A)",
+    category: "Retrocession & Capital Markets",
+    definition: "Financial debt instruments that transfer insurance risk to institutional capital market investors. If a predefined catastrophe trigger occurs, investors forfeit interest or principal to pay reinsurance losses.",
+    deInsight: "Specialty asset data schemas. Arch Capital manages alternative capital vehicles (e.g., Bellemeade Re mortgage ILS, Cat bonds). Data models track coupon rates, collateral yields, and triggers.",
+    schema: "dim_ils_tranche (CUSIP, Bond_Name, Trigger_Type = 'INDEMNITY|PARAMETRIC')",
+    formula: "Principal Forfeiture = Min(Original Principal, Incurred Event Loss - Attachment)"
+  },
+  {
+    id: "retro-05",
+    term: "Reinsurance Sidecar",
+    category: "Retrocession & Capital Markets",
+    definition: "A limited-purpose, special purpose vehicle (SPV) that allows third-party institutional investors to participate in a quota-share portion of a reinsurer's book of business, providing off-balance-sheet capacity.",
+    deInsight: "Requires dedicated sub-ledger accounting pipelines. Third-party investor capital must be segregated with distinct expense and fee allocation algorithms.",
+    schema: "dim_sidecar_entity, fact_sidecar_investor_distribution",
+    formula: "Investor Return = Ceded Underwriting Profit + Collateral Investment Yield - Management Fee"
+  },
+  {
+    id: "retro-06",
+    term: "Industry Loss Warranty (ILW)",
+    category: "Retrocession & Capital Markets",
+    definition: "A non-proportional contract whose payout is triggered not by the buyer's actual individual incurred loss, but when total industry-wide catastrophe losses exceed a pre-agreed index threshold (e.g. PCS US Hurricane loss > $30B).",
+    deInsight: "Eliminates claims bordereau audits! Payout is binary or indexed based on third-party data providers (PCS, PERILS AG, Sigma). Data pipelines ingest external industry loss indices.",
+    schema: "dim_ilw_contract (Index_Provider = 'PCS', Trigger_Threshold_USD)",
+    formula: "If Industry_Loss >= Trigger_Threshold -> Payout = Contract_Limit"
+  },
+  {
+    id: "retro-07",
+    term: "Fronting Arrangement & Fronting Fee",
+    category: "Retrocession & Capital Markets",
+    definition: "An arrangement where a licensed, admitted insurer issues policies on its paper but cedes 100% (or nearly 100%) of the risk and premium to an unlicensed/unadmitted reinsurer, retaining a fee (fronting fee) for regulatory use.",
+    deInsight: "Fronting pipelines require rigorous collateral tracking (Funds Withheld, Letters of Credit, Trust Accounts) to satisfy state insurance departments.",
+    schema: "fact_fronting_transaction (Fronting_Fee_Pct, Collateral_Balance)",
+    formula: "Fronting Fee = Gross Written Premium * Fronting Fee Percentage"
+  },
+
+  /* ================= 6. ACTUARIAL, LOSS RESERVING & TRIANGLES ================= */
+  {
+    id: "act-01",
+    term: "Accident Year (AY)",
+    category: "Actuarial & Reserving",
+    definition: "The calendar year in which the loss event actually occurred, regardless of when the underlying policy was written or when the claim was reported.",
+    deInsight: "The primary vertical dimension in actuarial loss reserving triangles. Essential for isolating catastrophe and weather anomalies to the exact year of impact.",
+    schema: "dim_date (Accident_Year = EXTRACT(YEAR FROM Loss_Date))",
+    formula: null
+  },
+  {
+    id: "act-02",
+    term: "Underwriting Year (UWY) / Policy Year (PY)",
+    category: "Actuarial & Reserving",
+    definition: "The calendar year in which the policy or reinsurance treaty was bound/incepted. All premiums and losses attached to that contract belong to this UWY regardless of when claims occur.",
+    deInsight: "Crucial distinction for Data Engineers! An Underwriting Year 2023 property treaty covers losses occurring in both 2023 and 2024. Never mix UWY and AY in queries.",
+    schema: "dim_date (Underwriting_Year = EXTRACT(YEAR FROM Treaty_Inception_Date))",
+    formula: null
+  },
+  {
+    id: "act-03",
+    term: "Development Period / Age (Lag)",
+    category: "Actuarial & Reserving",
+    definition: "The time elapsed (typically measured in 12, 24, 36, 48-month intervals) from the start of the accident year or underwriting year to the valuation snapshot date.",
+    deInsight: "Horizontal axis in loss development triangles. Pipelines must compute age lag: `Development_Lag_Months = DATEDIFF('month', Accident_Year_Start, Evaluation_Date)`.",
+    schema: "fact_triangle_cell (Accident_Year, Development_Month = 12, 24, 36...)",
+    formula: null
+  },
+  {
+    id: "act-04",
+    term: "Loss Development Triangle",
+    category: "Actuarial & Reserving",
+    definition: "A triangular matrix displaying cumulative or incremental historical loss metrics (paid losses, reported losses, claim counts) organized by origin period (rows) and development age (columns).",
+    deInsight: "Core data product built by Data Engineers for Actuarial Reserving systems. Formed by dynamic aggregation over immutable historical snapshot tables.",
+    schema: "view_actuarial_triangle_matrix (AY, Dev_12, Dev_24, Dev_36, Dev_48)",
+    formula: "Cumulative Loss(AY, Dev) = Sum of all payments from AY start through Dev date"
+  },
+  {
+    id: "act-05",
+    term: "Chain Ladder Method (Loss Development Factor - LDF)",
+    category: "Actuarial & Reserving",
+    definition: "The classic actuarial reserving method that calculates age-to-age loss development factors from historical triangles to project immature loss years to their ultimate expected value.",
+    deInsight: "Implemented in SQL/Python data pipelines. Development factors (LDF) = Sum(Loss at age t+1) / Sum(Loss at age t). Ultimate Loss = Current Reported Loss * Cumulative LDF.",
+    schema: "fact_actuarial_factors (Age_Interval, Age_To_Age_Factor, Cumulative_LDF)",
+    formula: "LDF(t to t+1) = Sum(Loss_t+1) / Sum(Loss_t)"
+  },
+  {
+    id: "act-06",
+    term: "Bornhuetter-Ferguson (BF) Method",
+    category: "Actuarial & Reserving",
+    definition: "An actuarial method that blends actual reported losses with an a priori expected loss estimate (based on pricing loss ratio and earned premium), avoiding overreacting to volatile early reported claims.",
+    deInsight: "Widely used for long-tail casualty lines at Arch Re. Pipelines require joining pricing expected loss ratios with current triangle development factors.",
+    schema: "fact_bf_projection (AY, Earned_Premium, Expected_Loss_Ratio, Indicated_IBNR)",
+    formula: "Ultimate Loss = Actual Reported Loss + (Earned Premium * Expected Loss Ratio * (1 - 1/Cumulative LDF))"
+  },
+  {
+    id: "act-07",
+    term: "Cape Cod Method (Stanard-Bühlmann)",
+    category: "Actuarial & Reserving",
+    definition: "An extension of the Bornhuetter-Ferguson method where the expected initial loss ratio is not assumed a priori, but is estimated directly from the aggregated historical data across all accident years.",
+    deInsight: "Requires iterative multi-year weight calculations across historical premium and development triangles.",
+    schema: "fact_cape_cod_reserving (Trended_Earned_Premium, Decay_Factor)",
+    formula: "Expected Loss Ratio = Sum(Reported Losses) / Sum(Earned Premium * % Developed)"
+  },
+  {
+    id: "act-08",
+    term: "Long-Tail vs Short-Tail Lines",
+    category: "Actuarial & Reserving",
+    definition: "Short-tail lines (property damage, auto physical damage) report and settle claims quickly (within 1-2 years). Long-tail lines (casualty, medical malpractice, workers comp, environmental) take 5-20+ years to fully develop.",
+    deInsight: "Determines triangle schema dimensions and partitioning. Short-tail triangles cap at 36-48 months; casualty triangles require 120-240+ monthly lag columns.",
+    schema: "dim_line_of_business (LOB_Code, Tail_Type = 'SHORT_TAIL|LONG_TAIL')",
+    formula: null
+  },
+  {
+    id: "act-09",
+    term: "Loss Adjustment Expense (LAE - ALAE & ULAE)",
+    category: "Actuarial & Reserving",
+    definition: "Expenses incurred in investigating, defending, and settling claims. ALAE (Allocated LAE) is directly tied to a specific claim (e.g. legal defense fees). ULAE (Unallocated LAE) represents general overhead (claims department salaries).",
+    deInsight: "ALAE is captured at the transactional claim grain. ULAE is modeled as a percentage loading factor by actuaries and allocated down.",
+    schema: "fact_claim_transaction (Loss_Amt, ALAE_Amt), agg_actuarial (ULAE_Factor)",
+    formula: "Total Claims Cost = Indemnity Losses + ALAE + ULAE"
+  },
+  {
+    id: "act-10",
+    term: "Burning Cost (Pure Burning Cost)",
+    category: "Actuarial & Reserving",
+    definition: "The historical loss cost of a specific reinsurance layer expressed as the ratio of historical incurred layer losses to the subject premium over a multi-year experience period.",
+    deInsight: "Key metric for reinsurance treaty underwriters and pricing actuaries. Pipelines generate rolling 5-year and 10-year burning cost analyses for treaty renewals.",
+    schema: "agg_treaty_experience (Experience_Years, Burning_Cost_Rate_Pct)",
+    formula: "Burning Cost Rate % = (Sum of Historical Layer Losses / Sum of Subject Premium) * 100"
+  },
+
+  /* ================= 7. CATASTROPHE MODELING & EXPOSURE MANAGEMENT ================= */
+  {
+    id: "cat-01",
+    term: "Catastrophe (Cat) Modeling",
+    category: "Catastrophe Modeling",
+    definition: "Computer simulations using geophysical, meteorological, and structural engineering science to evaluate financial risk from low-frequency, high-severity natural and man-made disasters.",
+    deInsight: "Massive big data domain. Arch Re runs thousands of simulated stochastic catastrophe event years to calculate portfolio capital adequacy.",
+    schema: "dim_cat_model (Model_Vendor = 'RMS|AIR', Model_Version, Peril_Set)",
+    formula: null
+  },
+  {
+    id: "cat-02",
+    term: "Moody's RMS & Verisk AIR (Touchstone)",
+    category: "Catastrophe Modeling",
+    definition: "The dominant commercial vendor catastrophe models used across the global reinsurance sector to simulate hurricane, earthquake, flood, convective storm, and cyber exposures.",
+    deInsight: "Data Engineers build ingestion pipelines that export exposure data into RMS/AIR formats and ingest simulated Event Loss Tables (ELT) back into snowflake/lakehouse.",
+    schema: "stg_rms_elt_output (Event_ID, Stochastic_Weight, Loss_Amount)",
+    formula: null
+  },
+  {
+    id: "cat-03",
+    term: "Open Exposure Data (OED) & Oasis LMF",
+    category: "Catastrophe Modeling",
+    definition: "Open-source data standards and modeling frameworks (governed by the Oasis Loss Modelling Framework) establishing standardized schemas for property exposure (location, occupancy, construction).",
+    deInsight: "The modern target schema for exposure pipelines! Standardized columns include `LocPerilsCovered`, `BuildingHeight`, `ConstructionCode`, `OccupancyCode`.",
+    schema: "oed_location (LocNumber, Latitude, Longitude, Construction, Occupancy, TIV)",
+    formula: null
+  },
+  {
+    id: "cat-04",
+    term: "Statement of Values (SOV)",
+    category: "Catastrophe Modeling",
+    definition: "A schedule of insured locations provided by the insured or cedant listing individual property coordinates, construction types, occupancy codes, and replacement building/contents values.",
+    deInsight: "Unstructured/semi-structured ingestion challenge! Often delivered in irregular Excel files. Data pipelines run address geocoding, deduplication, and schema normalization.",
+    schema: "fact_sov_location (Location_ID, Street_Address, Geo_Point, Replacement_Cost)",
+    formula: "Total Insured Value (TIV) = Building Value + Contents Value + Business Interruption"
+  },
+  {
+    id: "cat-05",
+    term: "Total Insured Value (TIV)",
+    category: "Catastrophe Modeling",
+    definition: "The total monetary value of physical assets (buildings, equipment, inventory) and business interruption revenue exposed to loss at an insured property.",
+    deInsight: "The base exposure metric in property cat pricing and accumulation management.",
+    schema: "fact_property_exposure (TIV_Amount, Building_TIV, Contents_TIV)",
+    formula: "TIV = Building_Val + Contents_Val + Business_Interruption_Val"
+  },
+  {
+    id: "cat-06",
+    term: "Average Annual Loss (AAL / Expected Loss)",
+    category: "Catastrophe Modeling",
+    definition: "The long-term expected catastrophe loss per year averaged across thousands of simulated stochastic years in a cat model.",
+    deInsight: "Represents the pure risk premium needed to break even over hundreds of years before profit margin and operating expenses are added.",
+    schema: "fact_cat_model_summary (AAL_Gross, AAL_Net, AAL_Ceded)",
+    formula: "AAL = Sum(Event_Loss_i * Annual_Occurrence_Probability_i) for all stochastic events"
+  },
+  {
+    id: "cat-07",
+    term: "Probable Maximum Loss (PML)",
+    category: "Catastrophe Modeling",
+    definition: "An estimate of the maximum loss expected to occur from a catastrophic event at a specified return period (e.g., 1-in-100 year or 1-in-250 year loss level).",
+    deInsight: "Crucial for regulatory capital (BMA Bermuda Solvency, AM Best). Data queries calculate return period quantiles from simulated loss distributions.",
+    schema: "fact_cat_pml_curve (Return_Period = 100, 250, PML_Loss_USD)",
+    formula: "PML(Return Period T) = Loss Level where Cumulative Probability = (1 - 1/T)"
+  },
+  {
+    id: "cat-08",
+    term: "Exceedance Probability Curve (OEP & AEP)",
+    category: "Catastrophe Modeling",
+    definition: "OEP (Occurrence Exceedance Probability) represents the probability that the largest single event in a year will exceed a dollar threshold. AEP (Aggregate Exceedance Probability) represents the probability that total annual combined losses exceed that threshold.",
+    deInsight: "Actuarial risk distributions stored in high-performance query marts for underwriting portfolio optimization.",
+    schema: "fact_ep_curve (Curve_Type = 'OEP|AEP', Probability, Loss_Threshold)",
+    formula: "Return Period (Years) = 1 / Probability of Exceedance"
+  },
+  {
+    id: "cat-09",
+    term: "Accumulation Management / Clash Risk",
+    category: "Catastrophe Modeling",
+    definition: "The tracking and aggregation of geographic exposure to prevent a single event (e.g., Miami hurricane or California earthquake) from bankrupting the carrier across overlapping treaties.",
+    deInsight: "Geospatial data engineering! Uses PostGIS, Uber H3 hexagonal spatial indexing, or S2 geometry to group insured locations into spatial accumulation clusters.",
+    schema: "agg_geo_exposure_h3 (h3_cell_index, Accumulation_TIV_USD)",
+    formula: null
+  },
+
+  /* ================= 8. OPERATIONS, BORDEREAUX & MARKET DATA ================= */
+  {
+    id: "ops-01",
+    term: "Bordereau (Bordereaux - pl.)",
+    category: "Operations & Market Standards",
+    definition: "A periodic detailed transaction report (typically monthly or quarterly) submitted by the ceding company or MGA to the reinsurer detailing individual policies written, premiums collected, and claims paid.",
+    deInsight: "The single biggest data engineering operational workload in reinsurance! Millions of rows in wildly disparate formats must be ingested, mapped, and reconciled.",
+    schema: "stg_bordereau_header, stg_bordereau_raw_item",
+    formula: null
+  },
+  {
+    id: "ops-02",
+    term: "Premium Bordereau vs Claims Bordereau",
+    category: "Operations & Market Standards",
+    definition: "Premium bordereaux detail policy numbers, inception dates, TIV, gross written premium, and ceded premium. Claims bordereaux detail claim numbers, loss dates, claim status, paid indemnity, case reserves, and salvage.",
+    deInsight: "Pipelines enforce separate ingestion schemas: Premium bordereau transforms into `fact_premium_movement`; Claims bordereau transforms into `fact_claim_movement`.",
+    schema: "fact_bordereau_premium_detail, fact_bordereau_claim_detail",
+    formula: null
+  },
+  {
+    id: "ops-03",
+    term: "ACORD Standards & e-Messaging (DRI / Ruschlikon)",
+    category: "Operations & Market Standards",
+    definition: "Global data standards for the insurance industry. The Ruschlikon initiative uses ACORD XML and JSON e-messaging to automate accounting (EBOT) and claims (ECOT) data exchange between brokers, cedants, and reinsurers.",
+    deInsight: "Event-driven architecture! Modern data pipelines ingest ACORD XML/JSON payloads directly from API gateways or message queues (Kafka, AWS SQS) into Bronze lakehouse tables.",
+    schema: "stg_acord_ebot_message (Message_ID, Payload_JSON, Parsed_Status)",
+    formula: null
+  },
+  {
+    id: "ops-04",
+    term: "Market Reform Contract (MRC) / Broker Slip",
+    category: "Operations & Market Standards",
+    definition: "The standardized legal contract document negotiated in the London Market / Lloyd's outlining treaty terms, subscription lines, attachment points, warranties, and signatory stamps.",
+    deInsight: "Historically scanned PDFs or Word documents. Modern data pipelines employ OCR, Large Language Models (LLMs), and NLP to extract contract entities directly into `dim_treaty`.",
+    schema: "dim_treaty_mrc (MRC_Version, Lead_Underwriter, Slip_Terms_Extracted_JSON)",
+    formula: null
+  },
+  {
+    id: "ops-05",
+    term: "Reinsurance Intermediary / Broker (Aon, Guy Carpenter, Gallagher Re)",
+    category: "Operations & Market Standards",
+    definition: "The licensed broker representing the ceding company that structures, negotiates, and places the reinsurance program with reinsurers, often handling premium collections and claims distributions.",
+    deInsight: "Key stakeholder dimension. Broker codes dictate remittance pathways, banking routing instructions, and commission payment splits.",
+    schema: "dim_broker (Broker_Code, Broker_Firm_Name, Contact_Details)",
+    formula: null
+  },
+  {
+    id: "ops-06",
+    term: "Lead Reinsurer vs Following Reinsurer",
+    category: "Operations & Market Standards",
+    definition: "The Lead Reinsurer sets the contract terms, pricing rate, and wording. Following Reinsurers subscribe to portions of the treaty (e.g., 10%, 25%) under the exact terms agreed upon by the lead.",
+    deInsight: "Subscription placement model. Data models must capture: `Is_Lead_Underwriter_Flag` and `Arch_Re_Signed_Line_Pct` vs `Arch_Re_Written_Line_Pct`.",
+    schema: "dim_treaty_syndication (Reinsurer_ID, Is_Lead, Written_Line_Pct, Signed_Line_Pct)",
+    formula: null
+  },
+  {
+    id: "ops-07",
+    term: "Signed Line vs Written Line",
+    category: "Operations & Market Standards",
+    definition: "A reinsurer might offer to take 20% of a treaty (Written Line). If the treaty is oversubscribed (e.g. 130% total participation offered), the broker signs down each reinsurer pro-rata to their final binding share (Signed Line).",
+    deInsight: "Critical state change in treaty pipelines! Premium billing and loss indemnification must strictly reference the final `Signed_Line_Pct`, never the initial `Written_Line_Pct`.",
+    schema: "dim_treaty_participation (Written_Line_Pct, Signed_Line_Pct)",
+    formula: "Signed Line % = Written Line % * (100% / Total Oversubscribed Line %)"
+  },
+  {
+    id: "ops-08",
+    term: "Reinsurance Reconciliation",
+    category: "Operations & Market Standards",
+    definition: "The rigorous month-end and quarter-end financial reconciliation process matching ceded bordereaux transactions against general ledger accounts, bank cash receipts, and counterparty statements.",
+    deInsight: "Major Senior Data Engineer deliverable. Automated reconciliation pipelines flag discrepancies between expected treaty formula outputs and broker bordereau cash remittances.",
+    schema: "fact_reconciliation_variance (Treaty_ID, Expected_Premium, Billed_Premium, Variance_USD)",
+    formula: "Variance = Expected Model Cession - Actual Bordereau Cession"
+  },
+
+  /* ================= 9. DATA ENGINEERING ARCHITECTURE & FINANCIAL REPORTING ================= */
+  {
+    id: "de-01",
+    term: "Tri-Currency Accounting System",
+    category: "Data Engineering & Architecture",
+    definition: "The accounting standard in international reinsurance where every monetary transaction is recorded in three distinct currencies: Original Currency (policy transaction currency), Settlement Currency (bank cash transfer currency), and Base Reporting Currency (USD).",
+    deInsight: "Rule #1 for Arch Re Data Engineers! Never write `SELECT SUM(premium)`. You must always join with `dim_daily_fx_rates` on `Transaction_Date` and normalize to `USD_Base_Amount`.",
+    schema: "fact_financial_transaction (Original_Curr, Settlement_Curr, Reporting_Curr_USD, FX_Rate)",
+    formula: "Base_USD = Original_Amt * Exchange_Rate(Original_Curr -> USD, Trans_Date)"
+  },
+  {
+    id: "de-02",
+    term: "Slowly Changing Dimensions (SCD Type 2)",
+    category: "Data Engineering & Architecture",
+    definition: "A data modeling technique that tracks the full historical evolution of dimension attributes over time by inserting a new row with valid date intervals (`Valid_From`, `Valid_To`, `Is_Current_Flag`).",
+    deInsight: "Mandatory for `dim_treaty` and `dim_contract_layer`. When a treaty's attachment point is amended via mid-term endorsement, historical claims must continue linking to the original terms.",
+    schema: "dim_treaty (Treaty_SK, Treaty_NK, Valid_From, Valid_To, Is_Current)",
+    formula: "WHERE evaluation_date BETWEEN valid_from AND COALESCE(valid_to, '9999-12-31')"
+  },
+  {
+    id: "de-03",
+    term: "Late-Arriving Facts / Claims Restatement",
+    category: "Data Engineering & Architecture",
+    definition: "The occurrence of business transactions (such as a claims notification or premium adjustment) belonging to a prior accounting or accident period that arrive months or years after the period closed.",
+    deInsight: "Reinsurance pipelines must distinguish between `Loss_Date`, `Reported_Date`, and `Ledger_Accounting_Date` to prevent altering audited financial books while enabling accurate actuarial restatements.",
+    schema: "fact_claim_movement (Loss_Date, Reported_Date, Accounting_Entry_Date)",
+    formula: null
+  },
+  {
+    id: "de-04",
+    term: "Multi-Split Loss Allocation Engine",
+    category: "Data Engineering & Architecture",
+    definition: "A deterministic data pipeline algorithm that distributes a single catastrophic gross claim across complex, stacked reinsurance programs (Quota Share -> Per Risk XL -> Cat XL -> Retrocession).",
+    deInsight: "A high-performance recursive or windowed calculation engine. If a $100M hurricane loss occurs, the algorithm cascades the loss through each layer and writes resulting recovery slices.",
+    schema: "fact_claim_layer_allocation (Claim_ID, Layer_ID, Allocated_Loss_USD)",
+    formula: "Layer_Loss = Min(Limit, Max(0, Incurred - Attachment))"
+  },
+  {
+    id: "de-05",
+    term: "IFRS 17 & US GAAP (LDTI)",
+    category: "Data Engineering & Architecture",
+    definition: "International and US financial accounting standards governing insurance contracts. IFRS 17 requires discounting future cash flows and tracking the Contractual Service Margin (CSM) representing unearned profit.",
+    deInsight: "Demands granular data lakehouse pipelines capable of tracking discounted future cash flow cash movements at the 'Unit of Account' (portfolio/cohort) grain.",
+    schema: "fact_ifrs17_csm_movement (Cohort_Year, Present_Value_Cash_Flows, Risk_Adjustment, CSM_Amt)",
+    formula: "CSM Movement = Beginning CSM + New Business CSM - CSM Amortization"
+  },
+  {
+    id: "de-06",
+    term: "Bermuda Monetary Authority (BMA) & BSCR",
+    category: "Data Engineering & Architecture",
+    definition: "The regulatory regime governing Arch Reinsurance Ltd in Bermuda. The Bermuda Solvency Capital Requirement (BSCR) calculates the target capital required to withstand 1-in-200 year extreme shocks.",
+    deInsight: "Quarterly regulatory pipeline run by Data Engineering. Aggregates underwriting risk, catastrophe PMLs, credit risk, and market risk into regulatory filing schedules.",
+    schema: "agg_bma_capital_adequacy (Available_Statutory_Capital, BSCR_Target_Capital)",
+    formula: "BSCR Solvency Ratio = Available Statutory Capital / Required BSCR Capital"
+  },
+  {
+    id: "de-07",
+    term: "Pipeline Premium (Unreported Premium Estimate)",
+    category: "Data Engineering & Architecture",
+    definition: "An actuarial estimate of written premium that has been bound and is active, but for which the ceding company has not yet submitted its official quarterly bordereau statement.",
+    deInsight: "Eliminates quarterly financial reporting lags. Data pipelines calculate pipeline estimates based on treaty expected subject premium and true it up once bordereaux arrive.",
+    schema: "fact_pipeline_premium (Treaty_ID, Estimation_Month, Estimated_GWP_USD)",
+    formula: "Pipeline Adjustment = Actual Bordereau Premium - Prior Accrued Pipeline Estimate"
+  },
+  {
+    id: "de-08",
+    term: "Medallion Lakehouse Architecture (Bronze / Silver / Gold)",
+    category: "Data Engineering & Architecture",
+    definition: "A modern data engineering paradigm used at Arch Re (utilizing Snowflake, Databricks, or Delta Lake): Bronze stores raw bordereaux payloads; Silver stores cleansed, normalized entities; Gold serves actuarial cubes and financial marts.",
+    deInsight: "Your day-to-day architecture! Data flows from raw parquet/json S3 drops (Bronze) -> DBT models & data quality constraints (Silver) -> Actuarial reserving marts & PowerBI dashboards (Gold).",
+    schema: "bronze_raw_bordereau -> silver_treaty_ledger -> gold_actuarial_triangles",
+    formula: null
+  },
+  {
+    id: 'ins-17',
+    term: 'Subrogation & Salvage Ledger',
+    category: 'Primary Insurance',
+    definition: 'Subrogation is the legal right of an insurer to pursue a third party that caused a loss in order to recover claim payments. Salvage is the recovery of value by taking possession and selling damaged property after paying a total loss claim.',
+    deInsight: 'Contra-loss accounting pipeline. Incurred loss must be reduced by received subrogation and salvage. Join key: claim_id. Must ensure recoveries are not double-counted between cedant and reinsurer.',
+    schema: 'fact_claim_recovery (Claim_ID, Recovery_Type, Recovery_Amount_USD)',
+    formula: 'Net Incurred Loss = Gross Incurred Loss - Subrogation Recoveries - Salvage'
+  },
+  {
+    id: 'ins-18',
+    term: 'Admitted vs Non-Admitted (Excess & Surplus / E&S)',
+    category: 'Primary Insurance',
+    definition: 'Admitted insurers are licensed by state insurance departments and backed by state guarantee funds with strict rate/form filing requirements. Non-admitted (Surplus Lines / E&S) insurers write specialty, distressed, or high-capacity risks without standard rate regulation.',
+    deInsight: 'Governs tax reporting and compliance pipelines. E&S business requires calculating surplus lines stamping fees and state premium taxes. Arch Capital operates both admitted (Arch Insurance) and E&S carriers.',
+    schema: 'dim_policy (Market_Type = \'ADMITTED|E&S\', State_Stamping_Fee_Pct)',
+    formula: null
+  },
+  {
+    id: 'ins-19',
+    term: 'Utmost Good Faith (Uberrimae Fidei)',
+    category: 'Primary Insurance',
+    definition: 'A foundational doctrine of insurance law requiring both policyholder and insurer to disclose all material facts fully, honestly, and without concealment or fraudulent misrepresentation.',
+    deInsight: 'Fundamental legal context during treaty dispute data discovery and arbitration pipelines. Failure of disclosure allows contract rescission.',
+    schema: 'dim_claim_dispute (Dispute_Reason = \'NON_DISCLOSURE\')',
+    formula: null
+  },
+  {
+    id: 'ins-20',
+    term: 'Proximate Cause (Doctrine of Causation)',
+    category: 'Primary Insurance',
+    definition: 'The primary, dominant cause that sets in motion an unbroken sequence of events leading to a loss, without which the loss would not have occurred.',
+    deInsight: 'Crucial in catastrophe claims ingestion (e.g. hurricane wind vs storm surge flood). The proximate cause determines which policy deductible or sub-limit applies in automated claim classification.',
+    schema: 'dim_claim (Proximate_Peril_Code, Contributing_Peril_Code)',
+    formula: null
+  },
+  {
+    id: 'ins-21',
+    term: 'Policy Endorsement / Mid-Term Adjustment (MTA)',
+    category: 'Primary Insurance',
+    definition: 'A written amendment to an active insurance policy modifying its terms, covered limits, insured locations, or premium during the policy lifecycle.',
+    deInsight: 'Triggers SCD Type 2 dimension updates and differential premium calculations. Pipeline must calculate unearned premium reserve (UPR) and pro-rata earned premium adjustments.',
+    schema: 'fact_policy_endorsement (Endorsement_Effective_Date, Delta_GWP_USD)',
+    formula: 'Pro-Rata Delta Premium = Annual Delta Premium * (Remaining Policy Days / 365)'
+  },
+  {
+    id: 'ins-22',
+    term: 'Co-Insurance Clause (Property 80% Rule)',
+    category: 'Primary Insurance',
+    definition: 'A commercial property policy clause requiring the insured to maintain coverage equal to at least a specified percentage (e.g. 80%) of the actual property replacement value, imposing a proportional penalty on partial losses if underinsured.',
+    deInsight: 'Embedded in claims calculation logic in policy administration and primary claims adjudication engines.',
+    schema: 'dim_policy_clause (Coinsurance_Required_Pct = 0.80)',
+    formula: 'Claim Payout = Min(Policy Limit, (Loss * (Carried Limit / (TIV * 80%))) - Deductible)'
+  },
+  {
+    id: 're-09',
+    term: 'Ultimate Net Loss (UNL)',
+    category: 'Reinsurance Foundations',
+    definition: 'The actual net sum paid or payable by the ceding company in settlement of a claim after deducting all recoveries (salvage, subrogation, underlying in-force reinsurance) and including allocated loss adjustment expenses (ALAE).',
+    deInsight: 'Excess of Loss reinsurance layers attach strictly to UNL, not gross direct loss! Data pipelines must calculate UNL before evaluating whether a treaty layer is breached.',
+    schema: 'fact_loss_unl_calculation (Gross_Paid, Less_Recoveries, Plus_ALAE, UNL_Amount)',
+    formula: 'UNL = Gross Paid Claim - Salvage - Subrogation - Underlying Reinsurance + ALAE'
+  },
+  {
+    id: 'np-12',
+    term: 'Annual Aggregate Deductible (AAD)',
+    category: 'Non-Proportional Treaties',
+    definition: 'A provision in excess of loss programs where the ceding company must absorb a cumulative annual aggregate dollar amount of qualifying layer losses before the reinsurer starts indemnifying.',
+    deInsight: 'Requires SQL analytical window functions! Pipelines must maintain a running cumulative total of layer losses across the treaty year; reinsurance payout only occurs after the running sum exceeds the AAD.',
+    schema: 'dim_treaty_layer (AAD_Limit_USD, Cumulative_Incurred_Towards_AAD)',
+    formula: 'Layer Recovery = Max(0, Incurred Layer Loss - Remaining AAD Balance)'
+  },
+  {
+    id: 'np-13',
+    term: 'Two-Risk Warranty',
+    category: 'Non-Proportional Treaties',
+    definition: 'A common warranty in Catastrophe Excess of Loss treaties specifying that at least two separate, distinct insured properties/risks must suffer damage from the catastrophic event before the layer can attach.',
+    deInsight: 'Data validation condition in event aggregation pipelines: COUNT(DISTINCT Risk_ID) >= 2. If a single property suffers a $40M loss, it must be claimed under Working XL, not Cat XL.',
+    schema: 'dim_treaty_clause (Requires_Two_Risks_Flag = True)',
+    formula: 'Cat Layer Recovery Trigger: (Total Event Loss >= Attachment) AND (Distinct Risks Damaged >= 2)'
+  },
+  {
+    id: 're-10',
+    term: 'Commutation & Commutation Agreement',
+    category: 'Reinsurance Foundations',
+    definition: 'A bilateral legal agreement between a ceding insurer and a reinsurer that completely terminates all current and future liabilities under a reinsurance treaty in exchange for an agreed lump-sum cash payment.',
+    deInsight: 'Major financial transaction event! Replaces all actuarial IBNR and case reserves for that contract with a final settled cash movement. Pipelines must de-recognize reserves and post gain/loss on commutation.',
+    schema: 'fact_commutation_settlement (Treaty_ID, Lump_Sum_Settlement_USD, Reserve_Written_Off)',
+    formula: 'Gain/Loss on Commutation = Carried Actuarial Reserve - Cash Settlement Paid'
+  },
+  {
+    id: 're-11',
+    term: 'Follow the Fortunes & Follow the Settlements',
+    category: 'Reinsurance Foundations',
+    definition: 'A cornerstone legal doctrine establishing that a reinsurer is bound by the decisions, claim settlements, and compromises made in good faith by the ceding company, provided they fall within treaty scope.',
+    deInsight: 'Underpins automated bordereaux ingestion. Unless flagged for coverage disputes, settlements processed by the cedant are indemnified automatically without re-adjudicating.',
+    schema: 'dim_treaty_clause (Follow_Fortunes_Flag = True)',
+    formula: null
+  },
+  {
+    id: 're-12',
+    term: 'Clean Cut vs Run-Off Accounting',
+    category: 'Reinsurance Foundations',
+    definition: 'In Clean Cut, at treaty expiration the reinsurer returns unearned premium (Portfolio Transfer Out) and is released from future liability. In Run-Off, the reinsurer remains liable for all losses occurring on policies written during the term until they expire.',
+    deInsight: 'Governs financial partition expiration logic. Clean Cut creates instant balancing journal entries at year-end; Run-Off requires tracking development for years after treaty expiration.',
+    schema: 'dim_treaty (Accounting_Mode = \'CLEAN_CUT|RUN_OFF\')',
+    formula: null
+  },
+  {
+    id: 're-13',
+    term: 'Portfolio Transfer (Portfolio In / Portfolio Out)',
+    category: 'Reinsurance Foundations',
+    definition: 'The transfer of an existing portfolio of unearned premium reserves or outstanding loss liabilities from an outgoing reinsurer to an incoming reinsurer at the beginning or end of a treaty year.',
+    deInsight: 'Requires day-1 opening balance pipelines. Incoming transfer creates an immediate initial UPR or loss reserve liability matched with cash consideration.',
+    schema: 'fact_portfolio_transfer (Transfer_Type = \'PREMIUM_IN|LOSS_OUT\', Transfer_Amount_USD)',
+    formula: null
+  },
+  {
+    id: 're-14',
+    term: 'Sunset Clause',
+    category: 'Reinsurance Foundations',
+    definition: 'A treaty provision stating that the reinsurer will not be liable for any claim reported after a specified date or elapsed duration (e.g., 5, 7, or 10 years after treaty inception).',
+    deInsight: 'Automated validation filter in claims ingestion: if DATEDIFF(\'year\', Treaty_Inception, Loss_Report_Date) > Sunset_Limit, flag claim as expired and non-recoverable.',
+    schema: 'dim_treaty_clause (Sunset_Duration_Years = 7, Sunset_Cutoff_Date)',
+    formula: 'Eligible Claim = Loss_Report_Date <= Sunset_Cutoff_Date'
+  },
+  {
+    id: 're-15',
+    term: 'Offset Clause',
+    category: 'Reinsurance Foundations',
+    definition: 'A clause permitting either the ceding company or the reinsurer to net mutual debits and credits arising across multiple contracts or accounting periods before remitting payment.',
+    deInsight: 'Treasury reconciliation and settlement netting engine. Instead of sending two multi-million dollar wires, pipelines calculate the single net settlement variance.',
+    schema: 'fact_netted_settlement (Gross_Payable_USD, Gross_Receivable_USD, Net_Wire_Amount_USD)',
+    formula: 'Net Wire Amount = Gross Claims Payable - Gross Premium Receivable'
+  },
+  {
+    id: 're-16',
+    term: 'Cut-Through Endorsement',
+    category: 'Reinsurance Foundations',
+    definition: 'A contractual endorsement requiring the reinsurer to pay claim recoveries directly to the original insured or loss payee if the ceding insurance company becomes insolvent.',
+    deInsight: 'Special routing pathway in payment engines. Direct link between primary policyholder bank accounts and the reinsurer disbursement ledger.',
+    schema: 'dim_treaty_clause (Has_Cut_Through_Flag = True)',
+    formula: null
+  },
+  {
+    id: 'lloyd-01',
+    term: 'Lloyd\'s Syndicate (Arch Syndicate 2012)',
+    category: 'Operations & Market Standards',
+    definition: 'A specialized underwriting entity at Lloyd\'s of London formed by capital providers to underwrite insurance and reinsurance risks, operated by a Managing Agent.',
+    deInsight: 'Arch Capital operates Lloyd\'s Syndicate 2012. Data models must adhere to Lloyd\'s regulatory schemas (QMA, QMB, Trust Fund reporting, Central Settlement).',
+    schema: 'dim_syndicate (Syndicate_Number = 2012, Managing_Agent = \'Arch Underwriting\')',
+    formula: null
+  },
+  {
+    id: 'lloyd-02',
+    term: 'Stamp Capacity & Line Slip',
+    category: 'Operations & Market Standards',
+    definition: 'Stamp capacity is the maximum gross written premium a Lloyd\'s syndicate is authorized to write for a given underwriting year. A Line Slip is a delegated facility enabling brokers to bind risks across participating syndicates.',
+    deInsight: 'Real-time pipeline monitoring! Breaching stamp capacity triggers regulatory fines and sanctions from the Lloyd\'s Franchise Board.',
+    schema: 'fact_syndicate_capacity (Stamp_Limit_GBP, YTD_GWP_GBP, Utilization_Pct)',
+    formula: 'Capacity Utilization % = (YTD Gross Written Premium / Approved Stamp Limit) * 100'
+  },
+  {
+    id: 'lloyd-03',
+    term: 'Xchanging / DXC Technology (London Market Bureau)',
+    category: 'Operations & Market Standards',
+    definition: 'The central market processing bureau for Lloyd\'s and the London company market that validates, centralizes, and settles premium accounting (LPAN) and claims (ECF - Electronic Claim File).',
+    deInsight: 'Daily ingestion pipeline. Ingests USM (Underwriters Signing Message) and SCM (Syndicate Claims Message) daily flat files into raw bronze lakehouse tables.',
+    schema: 'stg_xchanging_usm_movement (Signing_Ref, Lloyd_Cat_Code, Premium_Net_GBP)',
+    formula: null
+  },
+  {
+    id: 'act-11',
+    term: 'Link Ratios (Age-to-Age Development Factors)',
+    category: 'Actuarial & Reserving',
+    definition: 'The historical multipliers calculated between consecutive development ages in a loss triangle that quantify how losses emerge, grow, and settle over time.',
+    deInsight: 'Calculated via weighted averages, arithmetic means, or volume-weighted algorithms in SQL/Python data pipelines.',
+    schema: 'fact_triangle_link_ratios (From_Dev_Age, To_Dev_Age, Weighted_Factor)',
+    formula: 'Selected Link Ratio = Sum(Cumulative Loss at Age t+1) / Sum(Cumulative Loss at Age t)'
+  },
+  {
+    id: 'act-12',
+    term: 'Tail Factor',
+    category: 'Actuarial & Reserving',
+    definition: 'A factor applied to the oldest observable development period in a loss triangle to project ultimate losses out to final settlement, essential for long-tail liability lines that develop for decades.',
+    deInsight: 'Actuarial parametric curve fitting (e.g. exponential decay, Weibull, Sherman curves) stored in model parameter marts.',
+    schema: 'dim_actuarial_assumption (LOB_ID, Tail_Curve_Type, Tail_Factor_Value)',
+    formula: 'Ultimate Loss = Latest Observable Cumulative Loss * Tail Factor'
+  },
+  {
+    id: 'act-13',
+    term: 'Deferred Acquisition Costs (DAC) & DAC Amortization',
+    category: 'Financial & Accounting',
+    definition: 'An asset on the balance sheet representing unamortized upfront policy acquisition costs (commissions, brokerage fees) that are deferred and recognized proportionally over the coverage period.',
+    deInsight: 'Required under US GAAP and IFRS. Pipelines compute DAC amortization schedules parallel to unearned premium reserve (UPR) earning curves.',
+    schema: 'fact_dac_asset_movement (Valuation_Date, Unamortized_DAC_USD, Amortization_Expense)',
+    formula: 'DAC Amortization Expense = (Current Period Earned Premium / Total Written Premium) * Capitalized DAC'
+  },
+  {
+    id: 'act-14',
+    term: 'Solvency II Technical Provisions (BEL + Risk Margin)',
+    category: 'Financial & Accounting',
+    definition: 'Under European and Bermuda BMA regulatory regimes, the total reserves required on the balance sheet, comprising the Best Estimate Liability (BEL - discounted probability-weighted future cash flows) and a Risk Margin.',
+    deInsight: 'Core regulatory data mart feeding quarterly BMA BSCR and Solvency II filings. Requires discounting cash flows using official risk-free yield curves.',
+    schema: 'fact_technical_provisions (Valuation_Date, BEL_Discounted_USD, Risk_Margin_USD)',
+    formula: 'Technical Provisions = Best Estimate Liability (BEL) + Risk Margin'
+  },
+  {
+    id: 'de-09',
+    term: 'Conformed Dimensions (Conformed Currency & Geography)',
+    category: 'Data Engineering & Architecture',
+    definition: 'Standardized enterprise dimension tables that remain mathematically consistent across all business lines, treaties, and data marts (e.g. ISO 4217 Currency, ISO 3166 Country, UN Regional groupings).',
+    deInsight: 'Core Kimball modeling principle. Ensures that queries across Property Cat in Bermuda, Specialty in London, and Casualty in Morristown use identical FX and geographic hierarchies.',
+    schema: 'dim_conformed_currency, dim_conformed_geography',
+    formula: null
+  },
+  {
+    id: 'de-10',
+    term: 'Automated Bordereau Ingestion & Validation Rules (BIVR)',
+    category: 'Data Engineering & Architecture',
+    definition: 'A data pipeline validation framework that evaluates incoming broker bordereaux files against mandatory schema rules, date sequence integrity, policy boundary limits, and duplicate claim IDs.',
+    deInsight: 'Implemented via Great Expectations, DBT tests, or PySpark assertions. Failed records are routed into exception quarantine tables with automated notifications to operations.',
+    schema: 'dq_bordereau_exception_log (File_ID, Row_Number, Rule_Failed, Raw_Payload)',
+    formula: null
+  },
+  {
+    id: 'de-11',
+    term: 'Event Sourcing & Change Data Capture (CDC)',
+    category: 'Data Engineering & Architecture',
+    definition: 'Capturing row-level database changes (INSERT, UPDATE, DELETE) from operational underwriting transaction systems using tools like Debezium or AWS DMS into streaming event topics.',
+    deInsight: 'Provides the immutable chronological audit log required for SOX compliance and retrospective reinsurance contract reconstructability.',
+    schema: 'cdc_treaty_events (Event_UUID, Op_Type, Timestamp, Before_State_JSON, After_State_JSON)',
+    formula: null
+  },
+  {
+    id: 'de-12',
+    term: 'Spatial Accumulation & Hexagonal Indexing (Uber H3)',
+    category: 'Catastrophe Modeling',
+    definition: 'Assigning physical property locations to discrete hierarchical hexagonal spatial bins (Uber H3) to calculate catastrophe accumulation density and clash risk.',
+    deInsight: 'Enables sub-millisecond spatial accumulation queries across millions of insured properties without expensive GIS spatial polygon joins.',
+    schema: 'agg_geo_exposure_h3 (h3_resolution_7_index, Accumulation_TIV_USD)',
+    formula: null
+  },
+  {
+    id: 'prop-09',
+    term: 'Loss Corridor Clause',
+    category: 'Proportional Treaties',
+    definition: 'A provision in a proportional treaty where the ceding company agrees to retain 100% of losses within a specified loss ratio range (e.g., between 75% and 85%), before the reinsurer resumes sharing losses above the corridor.',
+    deInsight: 'Piecewise mathematical loss sharing function. In pipeline calculations, ceded loss percentage drops to 0% when the portfolio loss ratio falls inside the corridor boundaries.',
+    schema: 'dim_treaty_clause (Corridor_Start_Loss_Ratio_Pct, Corridor_End_Loss_Ratio_Pct)',
+    formula: 'If Loss_Ratio BETWEEN Corridor_Start AND Corridor_End -> Cedant absorbs 100% of marginal loss'
+  },
+  {
+    id: 'prop-10',
+    term: 'Deficit Carryforward Clause',
+    category: 'Proportional Treaties',
+    definition: 'A contractual mechanism in profit-sharing treaties specifying that an underwriting loss incurred in one treaty year must be carried forward and offset against future profits before any future profit commission is paid to the cedant.',
+    deInsight: 'Multi-year state retention. Actuarial and financial settlement pipelines must track cumulative deficit balance ledgers across treaty iterations.',
+    schema: 'fact_profit_commission_ledger (Treaty_NK, Inception_Year, Accumulated_Deficit_USD)',
+    formula: 'Eligible Profit = Max(0, Current Year Underwriting Profit - Cumulative Deficit Carried Forward)'
+  },
+  {
+    id: 'np-14',
+    term: 'Clash Cover (Casualty Clash / Property Clash)',
+    category: 'Non-Proportional Treaties',
+    definition: 'A specialized excess of loss treaty designed to protect the cedant when a single catastrophic event triggers claims across multiple independent primary policies or lines of business simultaneously.',
+    deInsight: 'Cross-LOB aggregation logic. Pipelines must link claims with different Line_of_Business_IDs (e.g., Commercial Auto + General Liability + Umbrella) back to a shared Event_Cluster_ID.',
+    schema: 'dim_treaty (Treaty_Subtype = \'CLASH_COVER\'), fact_claim (Event_Cluster_ID)',
+    formula: 'Clash Loss = Sum(Incurred Claims Across Multiple Primary Policies from Single Event)'
+  },
+  {
+    id: 'retro-08',
+    term: 'Collateralized Reinsurance & Regulation 114 Trust Accounts',
+    category: 'Retrocession & Capital Markets',
+    definition: 'A reinsurance arrangement where the reinsurer (often an ILS fund or offshore SPV) deposits 100% of the maximum potential treaty limit into a dedicated third-party trust account (e.g. US Reg 114 Trust) upfront to eliminate credit risk.',
+    deInsight: 'Reconciled via daily custody bank API feeds (BNY Mellon, State Street). Pipeline monitors collateral collateralized value vs open case reserves and IBNR (collateral trapping).',
+    schema: 'fact_trust_collateral_balance (Trust_Account_No, Trapped_Collateral_USD, Unencumbered_Cash)',
+    formula: 'Collateral Trapping = Case Reserves + Actuarial IBNR Buffer * Agreed Buffer Multiplier'
+  },
+  {
+    id: 'retro-09',
+    term: 'Parametric Insurance & Parametric Reinsurance',
+    category: 'Retrocession & Capital Markets',
+    definition: 'Contracts where payout is triggered strictly by objective, verified physical parameters (e.g., wind speed recorded at NOAA weather stations > 130 mph or earthquake magnitude > 7.5 Mw) rather than actual indemnified property loss.',
+    deInsight: 'Zero claims adjustment lag! Instant payout calculation. Pipelines ingest IoT, USGS, or satellite APIs to trigger automated settlement events.',
+    schema: 'dim_parametric_trigger (Parameter_Source = \'NOAA|USGS\', Payout_Matrix_JSON)',
+    formula: 'If Peak_Observed_Windspeed >= 140kt -> Payout = 100% of Contract Limit'
+  },
+  {
+    id: 'act-15',
+    term: 'Incurred Loss Development Triangle (Reported Triangle)',
+    category: 'Actuarial & Reserving',
+    definition: 'A triangle tracking the emergence of Total Reported Losses (Paid Losses + Case Reserves) over time. Contrasted with Paid Loss Triangles, Reported Triangles mature faster but reflect adjuster estimation biases.',
+    deInsight: 'Incurred triangles are the primary input for Bornhuetter-Ferguson and Chain Ladder reserving methods in Arch Re actuarial pipelines.',
+    schema: 'view_triangle_reported_losses (Accident_Year, Dev_12, Dev_24, Dev_36, Dev_48)',
+    formula: 'Reported Loss(t) = Cumulative Paid Losses(t) + Open Case Reserves(t)'
+  },
+  {
+    id: 'act-16',
+    term: 'Berquist-Sherman Method',
+    category: 'Actuarial & Reserving',
+    definition: 'An advanced actuarial technique used to adjust historical loss development triangles when changes in claims settlement speed or case reserving adequacy distort standard Chain Ladder projections.',
+    deInsight: 'Implemented in advanced actuarial data transformations. Corrects for claims department operational shifts before computing development link ratios.',
+    schema: 'fact_adjusted_triangle (AY, Adjusted_Case_Reserves, Restated_Incurred)',
+    formula: null
+  },
+  {
+    id: 'cat-10',
+    term: 'Vulnerability Curve & Mean Damage Ratio (MDR)',
+    category: 'Catastrophe Modeling',
+    definition: 'A mathematical curve in catastrophe models relating hazard intensity (e.g. 3-second wind gust in mph, ground acceleration in g) to the expected percentage of physical damage relative to the building replacement cost.',
+    deInsight: 'Key lookup table in catastrophic simulation engines. Joined on (Peril, Construction_Code, Occupancy_Code, Wind_Speed_Bin).',
+    schema: 'dim_cat_vulnerability_curve (Peril, Construction_Type, Hazard_Intensity, MDR_Pct)',
+    formula: 'Estimated Building Loss = Building TIV * Mean Damage Ratio (MDR)'
+  },
+  {
+    id: 'cat-11',
+    term: 'Event Loss Table (ELT) & Year Loss Table (YLT)',
+    category: 'Catastrophe Modeling',
+    definition: 'The core output formats generated by catastrophe modeling software. An ELT contains simulated catastrophic events with associated annual rates and portfolio damage distributions. A YLT organizes events chronologically into 10,000+ simulated financial years.',
+    deInsight: 'High-volume columnar tables in Arch Re data warehouses (hundreds of millions of rows). Highly optimized for parallel vectorized aggregation in Snowflake/Databricks.',
+    schema: 'fact_cat_elt (Event_ID, Stochastic_Rate, Gross_Loss_USD, Net_Loss_USD)',
+    formula: null
+  },
+  {
+    id: 'de-13',
+    term: 'Correction Movements & Prior Period Adjustments',
+    category: 'Data Engineering & Architecture',
+    definition: 'Accounting and data practices where revisions to prior historical records are recorded as discrete delta transaction rows in the current open ledger period, preserving past closed accounting periods.',
+    deInsight: 'Strict audit rule: NEVER update historical closed accounting rows in place! Insert a reversal movement and a new correcting movement with current accounting date.',
+    schema: 'fact_ledger_transaction (Is_Reversal_Flag, Original_Trans_ID, Effective_Accounting_Period)',
+    formula: 'Current Net Balance = Prior Cumulative Balance + Current Delta Movement'
+  },
+  {
+    id: 'de-14',
+    term: 'Data Mesh & Domain Data Products at Arch Re',
+    category: 'Data Engineering & Architecture',
+    definition: 'An architectural paradigm organizing data teams by business domain (Underwriting Domain, Actuarial Reserving Domain, Finance Domain, Cat Modeling Domain) with clean data contracts and self-serve lakehouse infrastructure.',
+    deInsight: 'Your organizational operating model! As a Senior Data Engineer, you own and publish certified Domain Data Products (e.g. Treaty Mart, Ceded Claims Pipeline) via defined SLAs and schema contracts.',
+    schema: 'data_contract_registry (Domain = \'Actuarial\', Product_Name = \'Cumulative_Loss_Triangles\', SLA_Hours = 4)',
+    formula: null
+  }
+];
+
+/* ------------------------------------------------------------------
+   STATE MANAGEMENT & STORAGE
+   ------------------------------------------------------------------ */
+let activeView = 'glossary';
+let currentCategory = 'All';
+let searchQuery = '';
+let showStarredOnly = false;
+let showUnlearnedOnly = false;
+let allExpanded = false;
+
+// LocalStorage helpers
+function getStoredJSON(key, defaultVal) {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultVal;
+  } catch (e) {
+    return defaultVal;
+  }
+}
+
+function setStoredJSON(key, val) {
+  try {
+    localStorage.setItem(key, JSON.stringify(val));
+  } catch (e) {}
+}
+
+let userProgress = getStoredJSON('arch_re_learned_terms', {});
+let userFavorites = getStoredJSON('arch_re_starred_terms', {});
+
+/* ------------------------------------------------------------------
+   UI ELEMENT REFERENCES
+   ------------------------------------------------------------------ */
+const glossaryGrid = document.getElementById('glossaryGrid');
+const searchInput = document.getElementById('searchInput');
+const categoryFilterContainer = document.getElementById('categoryFilterContainer');
+const statTotal = document.getElementById('statTotal');
+const statLearned = document.getElementById('statLearned');
+const statLearnedPct = document.getElementById('statLearnedPct');
+const statReinsCount = document.getElementById('statReinsCount');
+const statActuarialCount = document.getElementById('statActuarialCount');
+const statDataCount = document.getElementById('statDataCount');
+const starredCountSpan = document.getElementById('starredCount');
+const filterStarredBtn = document.getElementById('filterStarredBtn');
+const filterUnlearnedBtn = document.getElementById('filterUnlearnedBtn');
+const toggleExpandAllBtn = document.getElementById('toggleExpandAll');
+const darkModeToggleBtn = document.getElementById('darkModeToggle');
+
+/* ------------------------------------------------------------------
+   CATEGORY CHIP INITIALIZATION
+   ------------------------------------------------------------------ */
+const allCategories = ['All', ...new Set(enterpriseGlossary.map(t => t.category))];
+
+function renderCategoryChips() {
+  categoryFilterContainer.innerHTML = allCategories.map(cat => `
+    <button class="chip ${cat === currentCategory ? 'active' : ''}" data-cat="${escapeHtml(cat)}">
+      ${escapeHtml(cat)}
+    </button>
+  `).join('');
+
+  categoryFilterContainer.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentCategory = btn.dataset.cat;
+      renderCategoryChips();
+      renderGlossary();
+    });
+  });
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+/* ------------------------------------------------------------------
+   GLOSSARY RENDERING ENGINE
+   ------------------------------------------------------------------ */
+function renderGlossary() {
+  glossaryGrid.innerHTML = '';
+
+  const q = searchQuery.toLowerCase().trim();
+
+  const filtered = enterpriseGlossary.filter(item => {
+    const matchesCat = (currentCategory === 'All' || item.category === currentCategory);
+    const matchesSearch = !q || (
+      item.term.toLowerCase().includes(q) ||
+      item.definition.toLowerCase().includes(q) ||
+      (item.deInsight && item.deInsight.toLowerCase().includes(q)) ||
+      (item.schema && item.schema.toLowerCase().includes(q))
+    );
+    const matchesStarred = !showStarredOnly || userFavorites[item.id];
+    const matchesUnlearned = !showUnlearnedOnly || !userProgress[item.id];
+
+    return matchesCat && matchesSearch && matchesStarred && matchesUnlearned;
+  });
+
+  // Update Top Level Metrics
+  const totalCount = enterpriseGlossary.length;
+  const learnedCount = Object.values(userProgress).filter(Boolean).length;
+  const starredCount = Object.values(userFavorites).filter(Boolean).length;
+
+  statTotal.textContent = totalCount;
+  statLearned.textContent = learnedCount;
+  statLearnedPct.textContent = `${Math.round((learnedCount / totalCount) * 100)}% Mastered`;
+  statReinsCount.textContent = enterpriseGlossary.filter(t => t.category.includes('Treaties') || t.category.includes('Reinsurance')).length;
+  statActuarialCount.textContent = enterpriseGlossary.filter(t => t.category.includes('Actuarial') || t.category.includes('Financial')).length;
+  statDataCount.textContent = enterpriseGlossary.filter(t => t.category.includes('Data') || t.category.includes('Catastrophe')).length;
+  starredCountSpan.textContent = starredCount;
+
+  if (filtered.length === 0) {
+    glossaryGrid.innerHTML = `
+      <div class="empty-state">
+        <h3>No matching domain entities found</h3>
+        <p>Try clearing your search query or reset category filter.</p>
+      </div>
+    `;
+    return;
+  }
+
+  filtered.forEach(item => {
+    const isLearned = !!userProgress[item.id];
+    const isStarred = !!userFavorites[item.id];
+
+    const card = document.createElement('article');
+    card.className = `term-card ${isLearned ? 'learned' : ''} ${isStarred ? 'bookmarked' : ''} ${allExpanded ? 'open' : ''}`;
+    card.id = `card-${item.id}`;
+
+    let schemasHTML = '';
+    if (item.schema) {
+      const parts = item.schema.split(',');
+      schemasHTML = `
+        <div style="margin-top:0.35rem;">
+          <div style="font-size:0.7rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:0.15rem;">Core Schema Tables / Columns:</div>
+          <div>${parts.map(p => `<span class="schema-table-pill"><b>tbl</b> ${escapeHtml(p.trim())}</span>`).join('')}</div>
+        </div>
+      `;
+    }
+
+    let formulaHTML = '';
+    if (item.formula) {
+      formulaHTML = `
+        <div class="formula-box">
+          <div class="formula-title">Data Pipeline Formula / Logic:</div>
+          <div>${escapeHtml(item.formula)}</div>
+        </div>
+      `;
+    }
+
+    card.innerHTML = `
+      <div class="term-header">
+        <div class="term-title-group">
+          <span class="term-title">${escapeHtml(item.term)}</span>
+          <span class="term-cat-badge">${escapeHtml(item.category)}</span>
+        </div>
+        <div class="term-actions-top">
+          <button class="icon-btn star-btn ${isStarred ? 'active-star' : ''}" title="Star as Favorite" data-id="${item.id}">
+            ${isStarred ? '★' : '☆'}
+          </button>
+          <div class="toggle-indicator">▼</div>
+        </div>
+      </div>
+      <div class="term-body">
+        <div class="term-def">${escapeHtml(item.definition)}</div>
+
+        ${item.deInsight ? `
+          <div class="de-box">
+            <div class="de-box-title">⚡ Senior Data Engineer Context (Arch Re):</div>
+            <div class="de-box-text">${escapeHtml(item.deInsight)}</div>
+          </div>
+        ` : ''}
+
+        ${schemasHTML}
+        ${formulaHTML}
+
+        <div class="term-footer">
+          <label class="learn-toggle">
+            <input type="checkbox" class="learn-chk" data-id="${item.id}" ${isLearned ? 'checked' : ''}>
+            <span>${isLearned ? 'Mastered' : 'Mark as Mastered'}</span>
+          </label>
+          <button class="copy-btn" data-copy="${escapeHtml(item.term)}: ${escapeHtml(item.definition)}">Copy</button>
+        </div>
+      </div>
+    `;
+
+    // Click Header to Toggle
+    const header = card.querySelector('.term-header');
+    header.addEventListener('click', (e) => {
+      if (e.target.closest('.star-btn')) return;
+      card.classList.toggle('open');
+    });
+
+    // Star Button
+    const starBtn = card.querySelector('.star-btn');
+    starBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const current = !!userFavorites[item.id];
+      userFavorites[item.id] = !current;
+      setStoredJSON('arch_re_starred_terms', userFavorites);
+      renderGlossary();
+    });
+
+    // Learn Checkbox
+    const chk = card.querySelector('.learn-chk');
+    chk.addEventListener('change', (e) => {
+      userProgress[item.id] = e.target.checked;
+      setStoredJSON('arch_re_learned_terms', userProgress);
+      renderGlossary();
+    });
+
+    // Copy Button
+    const copyBtn = card.querySelector('.copy-btn');
+    copyBtn.addEventListener('click', () => {
+      const textToCopy = copyBtn.getAttribute('data-copy');
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        copyBtn.textContent = 'Copied!';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          copyBtn.textContent = 'Copy';
+          copyBtn.classList.remove('copied');
+        }, 1200);
+      });
+    });
+
+    glossaryGrid.appendChild(card);
+  });
+}
+
+/* ------------------------------------------------------------------
+   CONTROLS & EVENT LISTENERS
+   ------------------------------------------------------------------ */
+searchInput.addEventListener('input', (e) => {
+  searchQuery = e.target.value;
+  renderGlossary();
+});
+
+filterStarredBtn.addEventListener('click', () => {
+  showStarredOnly = !showStarredOnly;
+  filterStarredBtn.classList.toggle('active', showStarredOnly);
+  renderGlossary();
+});
+
+filterUnlearnedBtn.addEventListener('click', () => {
+  showUnlearnedOnly = !showUnlearnedOnly;
+  filterUnlearnedBtn.classList.toggle('active', showUnlearnedOnly);
+  renderGlossary();
+});
+
+toggleExpandAllBtn.addEventListener('click', () => {
+  allExpanded = !allExpanded;
+  toggleExpandAllBtn.textContent = allExpanded ? 'Collapse All' : 'Expand All';
+  document.querySelectorAll('.term-card').forEach(card => {
+    card.classList.toggle('open', allExpanded);
+  });
+});
+
+darkModeToggleBtn.addEventListener('click', () => {
+  const isDark = document.body.classList.toggle('dark');
+  darkModeToggleBtn.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+  try { localStorage.setItem('arch_re_dark_mode', isDark); } catch (e) {}
+});
+
+if (localStorage.getItem('arch_re_dark_mode') === 'true') {
+  document.body.classList.add('dark');
+  darkModeToggleBtn.textContent = '☀️ Light Mode';
+}
+
+/* ------------------------------------------------------------------
+   NAVIGATION TABS (Views)
+   ------------------------------------------------------------------ */
+const modeTabs = document.querySelectorAll('.mode-tab');
+const viewPanels = {
+  glossary: document.getElementById('viewGlossary'),
+  simulator: document.getElementById('viewSimulator'),
+  triangles: document.getElementById('viewTriangles'),
+  flashcards: document.getElementById('viewFlashcards'),
+  architecture: document.getElementById('viewArchitecture')
+};
+const glossaryControls = document.getElementById('glossaryControls');
+
+modeTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    modeTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    const view = tab.dataset.view;
+    activeView = view;
+
+    Object.keys(viewPanels).forEach(v => {
+      viewPanels[v].classList.toggle('active', v === view);
+    });
+
+    glossaryControls.style.display = (view === 'glossary') ? 'block' : 'none';
+
+    if (view === 'simulator') runSimulator();
+    if (view === 'flashcards') initFlashcards();
+  });
+});
+
+/* ------------------------------------------------------------------
+   INTERACTIVE SIMULATOR ENGINE (Excess of Loss Layer Tower)
+   ------------------------------------------------------------------ */
+function formatCurrency(num) {
+  return '$' + Number(num).toLocaleString('en-US');
+}
+
+function runSimulator() {
+  const grossLoss = parseFloat(document.getElementById('grossLossInput').value) || 0;
+  const retention = parseFloat(document.getElementById('cedantRetentionInput').value) || 0;
+  const layer1Limit = parseFloat(document.getElementById('layer1LimitInput').value) || 0;
+  const layer2Limit = parseFloat(document.getElementById('layer2LimitInput').value) || 0;
+  const archSharePct = parseFloat(document.getElementById('archShareInput').value) || 0;
+
+  const towerDisplay = document.getElementById('towerDisplay');
+  const simSummary = document.getElementById('simSummary');
+
+  // Boundary calculations
+  const layer1Attach = retention;
+  const layer1Exhaust = layer1Attach + layer1Limit;
+
+  const layer2Attach = layer1Exhaust;
+  const layer2Exhaust = layer2Attach + layer2Limit;
+
+  // Payout allocations
+  const paidRetention = Math.min(grossLoss, retention);
+
+  let paidLayer1 = 0;
+  if (grossLoss > layer1Attach) {
+    paidLayer1 = Math.min(grossLoss - layer1Attach, layer1Limit);
+  }
+
+  let paidLayer2Total = 0;
+  if (grossLoss > layer2Attach) {
+    paidLayer2Total = Math.min(grossLoss - layer2Attach, layer2Limit);
+  }
+  const archLayer2Payout = paidLayer2Total * (archSharePct / 100);
+
+  const uninusredLoss = Math.max(0, grossLoss - layer2Exhaust);
+
+  towerDisplay.innerHTML = `
+    <!-- Net Retention -->
+    <div class="tower-layer layer-retention">
+      <div>
+        <b>Cedant Net Retention:</b> Ground up to ${formatCurrency(retention)}
+      </div>
+      <div class="payout-tag">Cedant Pays: ${formatCurrency(paidRetention)}</div>
+    </div>
+
+    <!-- Layer 1 -->
+    <div class="tower-layer layer-one">
+      <div>
+        <b>Layer 1 (Working XL):</b> ${formatCurrency(layer1Limit)} xs ${formatCurrency(layer1Attach)}
+        <div style="font-size:0.75rem; opacity:0.85;">Exhausts at ${formatCurrency(layer1Exhaust)}</div>
+      </div>
+      <div class="payout-tag">Layer 1 Payout: ${formatCurrency(paidLayer1)}</div>
+    </div>
+
+    <!-- Layer 2 (With Arch Re) -->
+    <div class="tower-layer layer-two">
+      <div>
+        <b>Layer 2 (Cat XL):</b> ${formatCurrency(layer2Limit)} xs ${formatCurrency(layer2Attach)}
+        <div style="font-size:0.75rem; color:#fef08a;">Arch Re Share: ${archSharePct}%</div>
+      </div>
+      <div class="payout-tag">Total: ${formatCurrency(paidLayer2Total)} | Arch: ${formatCurrency(archLayer2Payout)}</div>
+    </div>
+
+    ${uninusredLoss > 0 ? `
+      <!-- Uninsured Spillover -->
+      <div class="tower-layer layer-uninsured">
+        <div>
+          <b>Uninsured Spillover (Above Tower):</b> Excess of ${formatCurrency(layer2Exhaust)}
+        </div>
+        <div class="payout-tag">Uncovered Loss: ${formatCurrency(uninusredLoss)}</div>
+      </div>
+    ` : ''}
+  `;
+
+  simSummary.innerHTML = `
+    <strong>Waterfall Allocation Breakdown for ${formatCurrency(grossLoss)} Loss:</strong>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:0.75rem; margin-top:0.5rem;">
+      <div>• <b>Cedant Net Paid:</b> ${formatCurrency(paidRetention + uninusredLoss)}</div>
+      <div>• <b>Layer 1 Market:</b> ${formatCurrency(paidLayer1)}</div>
+      <div>• <b>Layer 2 Market:</b> ${formatCurrency(paidLayer2Total)}</div>
+      <div style="color:#0369a1;">• <b>Arch Re Incurred Claim:</b> ${formatCurrency(archLayer2Payout)}</div>
+    </div>
+  `;
+}
+
+document.getElementById('recalcSimBtn').addEventListener('click', runSimulator);
+['grossLossInput', 'cedantRetentionInput', 'layer1LimitInput', 'layer2LimitInput', 'archShareInput'].forEach(id => {
+  document.getElementById(id).addEventListener('input', runSimulator);
+});
+
+/* ------------------------------------------------------------------
+   FLASHCARD TRAINER ENGINE
+   ------------------------------------------------------------------ */
+let fcIndex = 0;
+let fcList = [...enterpriseGlossary];
+
+const fcElement = document.getElementById('flashcardElement');
+const fcCategory = document.getElementById('fcCategory');
+const fcTerm = document.getElementById('fcTerm');
+const fcAnswer = document.getElementById('fcAnswer');
+const fcPrevBtn = document.getElementById('fcPrevBtn');
+const fcFlipBtn = document.getElementById('fcFlipBtn');
+const fcNextBtn = document.getElementById('fcNextBtn');
+const fcRandomBtn = document.getElementById('fcRandomBtn');
+
+function initFlashcards() {
+  updateFlashcard();
+}
+
+function updateFlashcard() {
+  fcElement.classList.remove('flipped');
+  fcFlipBtn.textContent = 'Reveal Answer';
+
+  const item = fcList[fcIndex];
+  fcCategory.textContent = item.category.toUpperCase();
+  fcTerm.textContent = item.term;
+  fcAnswer.innerHTML = `
+    <p>${escapeHtml(item.definition)}</p>
+    ${item.schema ? `<div style="margin-top:0.6rem; font-size:0.8rem; color:#0369a1;"><b>Schema:</b> ${escapeHtml(item.schema)}</div>` : ''}
+  `;
+}
+
+fcElement.addEventListener('click', () => {
+  const flipped = fcElement.classList.toggle('flipped');
+  fcFlipBtn.textContent = flipped ? 'Hide Answer' : 'Reveal Answer';
+});
+
+fcFlipBtn.addEventListener('click', () => {
+  const flipped = fcElement.classList.toggle('flipped');
+  fcFlipBtn.textContent = flipped ? 'Hide Answer' : 'Reveal Answer';
+});
+
+fcNextBtn.addEventListener('click', () => {
+  fcIndex = (fcIndex + 1) % fcList.length;
+  updateFlashcard();
+});
+
+fcPrevBtn.addEventListener('click', () => {
+  fcIndex = (fcIndex - 1 + fcList.length) % fcList.length;
+  updateFlashcard();
+});
+
+fcRandomBtn.addEventListener('click', () => {
+  fcIndex = Math.floor(Math.random() * fcList.length);
+  updateFlashcard();
+});
+
+/* ------------------------------------------------------------------
+   INITIALIZATION
+   ------------------------------------------------------------------ */
+renderCategoryChips();
+renderGlossary();
+</script>
+</body>
+</html>
