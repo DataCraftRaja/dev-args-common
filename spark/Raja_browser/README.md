@@ -16,3 +16,10 @@ npm start
 The app supports tabs, address/search, back/forward/reload, and session
 bookmarks. Website JavaScript runs with Node integration disabled and context
 isolation enabled. Browser permission requests are denied by default.
+
+## Open as a standalone webpage
+
+Open `index.html` in a browser to use the page without Electron. In this mode,
+searches and website shortcuts open the destination in a separate browser tab;
+websites cannot be rendered inside this page. For in-app Chromium tabs, start
+the Electron app with `npm start`.
