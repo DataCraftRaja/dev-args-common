@@ -1,5 +1,5 @@
 {
-  "name": "orbit-browser",
+  "name": "raja-browser",
   "version": "0.1.0",
   "private": true,
   "description": "A small desktop browser built with Electron and Chromium.",

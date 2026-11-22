@@ -1,4 +1,4 @@
-# Orbit Browser
+# Raja Browser
 
 A small desktop browser with a Chrome-inspired interface, built on Electron's
 Chromium engine. Unlike the HTML mockup, this app renders websites in isolated

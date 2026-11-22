@@ -282,7 +282,7 @@ function createWindow() {
     minWidth: 760,
     minHeight: 540,
     backgroundColor: "#202124",
-    title: "Orbit Browser",
+    title: "Raja Browser",
     webPreferences: {
       preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,

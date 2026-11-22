@@ -8,7 +8,7 @@ const savedBookmarksElement = document.querySelector("#saved-bookmarks");
 const menu = document.querySelector("#menu");
 const toast = document.querySelector("#toast");
 let currentState = standalone
-  ? { activeTabId: 1, tabs: [{ id: 1, title: "Orbit Browser", url: "", loading: false }] }
+  ? { activeTabId: 1, tabs: [{ id: 1, title: "Raja Browser", url: "", loading: false }] }
   : { activeTabId: null, tabs: [] };
 let savedBookmarks = [];
 let toastTimer;
@@ -186,13 +186,13 @@ document.querySelector("#menu-toggle-bookmarks").addEventListener("click", () =>
 document.querySelector("#menu-about").addEventListener("click", () => {
   showToast(standalone
     ? "Standalone mode opens websites in separate tabs in your regular browser."
-    : "Orbit Browser uses Electron and Chromium to load websites in isolated tabs.");
+    : "Raja Browser uses Electron and Chromium to load websites in isolated tabs.");
   menu.classList.remove("open");
 });
 document.querySelector("#menu-quit").addEventListener("click", () => {
   showToast(standalone
     ? "Close this page using your browser's tab controls."
-    : "Close this window to quit Orbit Browser.");
+    : "Close this window to quit Raja Browser.");
   menu.classList.remove("open");
 });
 
