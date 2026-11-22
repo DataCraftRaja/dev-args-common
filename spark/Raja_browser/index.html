@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:;">
+  <title>Orbit Browser</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="renderer.js" defer></script>
+</head>
+<body>
+  <main class="browser">
+    <header class="tabbar">
+      <div class="tabs" id="tabs" role="tablist" aria-label="Browser tabs"></div>
+      <button class="round-button new-tab" id="new-tab" aria-label="New tab" title="New tab">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <span class="window-title">Orbit Browser</span>
+    </header>
+
+    <nav class="toolbar" aria-label="Navigation">
+      <button class="round-button" id="back" aria-label="Back" title="Back">
+        <svg viewBox="0 0 24 24"><path d="m14 5-7 7 7 7M7 12h13"/></svg>
+      </button>
+      <button class="round-button" id="forward" aria-label="Forward" title="Forward">
+        <svg viewBox="0 0 24 24"><path d="m10 5 7 7-7 7M17 12H4"/></svg>
+      </button>
+      <button class="round-button" id="reload" aria-label="Reload" title="Reload">
+        <svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4.6 9a7.5 7.5 0 0 1 12.7-2L20 12M4 17v-5h5m10.4 3a7.5 7.5 0 0 1-12.7 2L4 12"/></svg>
+      </button>
+      <form class="omnibox" id="address-form">
+        <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg>
+        <input id="address" type="text" autocomplete="off" spellcheck="false" aria-label="Search or enter address" placeholder="Search or enter address">
+        <button class="bookmark-button" id="bookmark" type="button" aria-label="Bookmark this page" title="Bookmark this page">☆</button>
+      </form>
+      <button class="round-button more-button" id="menu-button" aria-label="More options" title="More options">⋮</button>
+    </nav>
+
+    <nav class="bookmarks" id="bookmarks-bar" aria-label="Bookmarks bar">
+      <button class="bookmark-link" data-url="https://www.google.com"><span class="dot blue"></span>Google</button>
+      <button class="bookmark-link" data-url="https://www.youtube.com"><span class="dot red"></span>YouTube</button>
+      <button class="bookmark-link" data-url="https://www.wikipedia.org"><span class="dot gray"></span>Wikipedia</button>
+      <div class="saved-bookmarks" id="saved-bookmarks"></div>
+      <span class="bookmarks-label">Bookmarks</span>
+    </nav>
+
+    <section class="home" id="home" aria-label="New tab page">
+      <div class="home-content">
+        <div class="brand"><span class="brand-mark">o</span><span>orbit</span></div>
+        <form class="home-search" id="home-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg>
+          <input id="home-query" type="text" aria-label="Search the web" placeholder="Search the web or enter a URL" autocomplete="off">
+          <span class="enter-hint">↵</span>
+        </form>
+        <div class="shortcuts">
+          <button class="shortcut" data-url="https://www.google.com"><span class="shortcut-icon blue">G</span><span>Google</span></button>
+          <button class="shortcut" data-url="https://www.youtube.com"><span class="shortcut-icon red">▶</span><span>YouTube</span></button>
+          <button class="shortcut" data-url="https://mail.google.com"><span class="shortcut-icon coral">M</span><span>Mail</span></button>
+          <button class="shortcut" data-url="https://maps.google.com"><span class="shortcut-icon green">⌖</span><span>Maps</span></button>
+          <button class="shortcut" data-url="https://www.wikipedia.org"><span class="shortcut-icon gray">W</span><span>Wikipedia</span></button>
+        </div>
+        <div class="welcome-card">
+          <span class="welcome-icon">✦</span>
+          <div><strong>Welcome to Orbit</strong><span>Enter a website or search above. Pages open in a real Chromium tab.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="menu" id="menu" role="menu">
+      <button id="menu-new-tab" role="menuitem">New tab <span>⌘ T</span></button>
+      <button id="menu-toggle-bookmarks" role="menuitem">Toggle bookmarks bar</button>
+      <hr>
+      <button id="menu-about" role="menuitem">About Orbit Browser</button>
+      <button id="menu-quit" role="menuitem">Quit</button>
+    </div>
+  </main>
+</body>
+</html>

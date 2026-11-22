@@ -1,0 +1,13 @@
+{
+  "name": "orbit-browser",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A small desktop browser built with Electron and Chromium.",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "45.4.1"
+  }
+}
