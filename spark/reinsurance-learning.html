@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reinsurance for Data Engineers — Interactive Field Guide</title>
+<style>
+  :root[data-theme="dark"]{
+    --bg:#0b1017; --panel:#131a23; --panel2:#1a232f; --text:#e7eef5; --muted:#94a3b3;
+    --line:#243040; --accent:#2dd4bf; --accent2:#f0b429; --good:#34d399; --bad:#f87171;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"]{
+    --bg:#f6f8fa; --panel:#ffffff; --panel2:#eef2f6; --text:#0f1720; --muted:#5a6674;
+    --line:#dde5ee; --accent:#0f766e; --accent2:#a16207; --good:#047857; --bad:#b91c1c;
+    --shadow:0 8px 24px rgba(15,23,32,.08);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16px; -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent)}
+  .layout{display:grid; grid-template-columns:268px minmax(0,1fr); min-height:100vh}
+
+  /* ---------- sidebar ---------- */
+  .side{
+    position:sticky; top:0; height:100vh; overflow-y:auto; padding:22px 16px 40px;
+    background:var(--panel); border-right:1px solid var(--line);
+  }
+  .brand{display:flex; align-items:center; gap:10px; margin-bottom:4px}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent)}
+  .brand strong{font-size:15px; letter-spacing:.2px}
+  .brand-sub{font-size:11.5px; color:var(--muted); margin:0 0 18px 21px; text-transform:uppercase; letter-spacing:.09em}
+  .progress-wrap{background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:11px 12px; margin-bottom:18px}
+  .progress-top{display:flex; justify-content:space-between; font-size:11.5px; color:var(--muted); margin-bottom:7px; letter-spacing:.04em}
+  .bar{height:6px; background:color-mix(in srgb, var(--line) 80%, transparent); border-radius:99px; overflow:hidden}
+  .bar > i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width .35s ease}
+  nav a{
+    display:flex; gap:9px; align-items:center; padding:7px 9px; border-radius:8px;
+    color:var(--muted); text-decoration:none; font-size:13.5px; transition:.15s;
+  }
+  nav a:hover{background:var(--panel2); color:var(--text)}
+  nav a.active{background:color-mix(in srgb, var(--accent) 14%, transparent); color:var(--text); font-weight:600}
+  nav a .n{font-size:10.5px; color:var(--accent); font-variant-numeric:tabular-nums; min-width:14px}
+  .side-foot{margin-top:20px; padding-top:14px; border-top:1px solid var(--line); font-size:11.5px; color:var(--muted)}
+
+  /* ---------- main ---------- */
+  main{padding:0 0 90px; min-width:0}
+  .topbar{
+    position:sticky; top:0; z-index:20; display:flex; align-items:center; justify-content:space-between;
+    padding:12px 34px; background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+  }
+  .topbar .crumb{font-size:12.5px; color:var(--muted)}
+  .btn{
+    font:inherit; font-size:12.5px; cursor:pointer; border-radius:8px; padding:6px 12px;
+    border:1px solid var(--line); background:var(--panel2); color:var(--text); transition:.15s;
+  }
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--accent); border-color:var(--accent); color:#04211d; font-weight:650}
+  .btn.ghost{background:transparent}
+  .wrap{max-width:860px; margin:0 auto; padding:0 34px}
+
+  /* ---------- hero ---------- */
+  .hero{padding:54px 0 30px; border-bottom:1px solid var(--line); margin-bottom:8px}
+  .kicker{font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); font-weight:700}
+  .hero h1{font-size:38px; line-height:1.15; margin:12px 0 14px; letter-spacing:-.02em}
+  .hero p{color:var(--muted); font-size:16.5px; margin:0 0 20px; max-width:60ch}
+  .chips{display:flex; flex-wrap:wrap; gap:8px}
+  .chip{font-size:11.5px; padding:4px 10px; border-radius:99px; border:1px solid var(--line); color:var(--muted); background:var(--panel)}
+
+  /* ---------- sections ---------- */
+  section{padding:44px 0; border-bottom:1px solid var(--line); scroll-margin-top:64px}
+  section:last-of-type{border-bottom:0}
+  h2{font-size:25px; margin:0 0 6px; letter-spacing:-.01em}
+  h2 .num{color:var(--accent); font-variant-numeric:tabular-nums; margin-right:8px; font-size:18px}
+  .lede{color:var(--muted); margin:0 0 22px; font-size:15.5px; max-width:68ch}
+  h3{font-size:16.5px; margin:26px 0 8px}
+  h4{font-size:14px; margin:18px 0 6px; color:var(--accent)}
+  p{margin:0 0 12px}
+  ul,ol{margin:0 0 14px; padding-left:20px}
+  li{margin:5px 0}
+  li::marker{color:var(--accent)}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.88em;
+       background:var(--panel2); padding:1.5px 5px; border-radius:5px; border:1px solid var(--line)}
+  pre{margin:0; overflow:auto; padding:14px 16px; border-radius:10px; background:var(--panel2);
+      border:1px solid var(--line); font-size:12.5px; line-height:1.6}
+  pre code{background:none; border:0; padding:0; font-size:12.5px}
+
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:16px 0}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+  .note{border-left:3px solid var(--accent2); background:color-mix(in srgb, var(--accent2) 9%, transparent);
+        padding:12px 16px; border-radius:0 10px 10px 0; margin:16px 0; font-size:14.5px}
+  .note b{color:var(--accent2)}
+  .tip{border-left:3px solid var(--accent); background:color-mix(in srgb, var(--accent) 9%, transparent);
+        padding:12px 16px; border-radius:0 10px 10px 0; margin:16px 0; font-size:14.5px}
+  .tip b{color:var(--accent)}
+
+  table{width:100%; border-collapse:collapse; font-size:13.5px; margin:14px 0}
+  th,td{text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top}
+  th{font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700}
+  tbody tr:hover{background:var(--panel2)}
+  td code{white-space:nowrap}
+
+  details{border:1px solid var(--line); border-radius:10px; padding:0; margin:10px 0; background:var(--panel)}
+  details summary{cursor:pointer; padding:12px 16px; font-weight:600; font-size:14.5px; list-style:none;
+                  display:flex; justify-content:space-between; gap:10px}
+  details summary::-webkit-details-marker{display:none}
+  details summary::after{content:"+"; color:var(--accent); font-weight:700}
+  details[open] summary::after{content:"–"}
+  details .body{padding:0 16px 14px; font-size:14.5px; color:var(--muted)}
+  details .body p:last-child{margin-bottom:0}
+
+  .read-row{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:26px;
+            padding-top:16px; border-top:1px dashed var(--line)}
+  .read-row .label{font-size:12px; color:var(--muted)}
+  .btn.done{background:color-mix(in srgb, var(--good) 18%, transparent); border-color:var(--good); color:var(--good)}
+
+  /* timeline */
+  .timeline{position:relative; padding-left:26px; margin:18px 0}
+  .timeline::before{content:""; position:absolute; left:8px; top:4px; bottom:4px; width:2px; background:var(--line)}
+  .tl-item{position:relative; margin-bottom:18px}
+  .tl-item::before{content:""; position:absolute; left:-22px; top:6px; width:11px; height:11px; border-radius:50%;
+                   background:var(--accent); box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent)}
+  .tl-item.hard::before{background:var(--accent2); box-shadow:0 0 0 3px color-mix(in srgb, var(--accent2) 20%, transparent)}
+  .tl-item strong{display:block; font-size:14.5px}
+  .tl-item span{color:var(--muted); font-size:13.5px}
+
+  /* tabs */
+  .tabs{display:flex; gap:6px; margin:16px 0 -1px; border-bottom:1px solid var(--line); flex-wrap:wrap}
+  .tab{font:inherit; font-size:12.5px; cursor:pointer; background:transparent; border:0; color:var(--muted);
+       padding:8px 12px; border-bottom:2px solid transparent}
+  .tab[aria-selected="true"]{color:var(--text); border-bottom-color:var(--accent); font-weight:650}
+  .pane{display:none}
+  .pane.show{display:block}
+
+  /* glossary */
+  .g-controls{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; align-items:center}
+  .search{flex:1; min-width:200px; position:relative}
+  .search input{
+    width:100%; font:inherit; font-size:13.5px; padding:9px 12px 9px 34px; border-radius:9px;
+    border:1px solid var(--line); background:var(--panel); color:var(--text); outline:none;
+  }
+  .search input:focus{border-color:var(--accent)}
+  .search::before{content:"⌕"; position:absolute; left:11px; top:7px; color:var(--muted); font-size:16px}
+  .tagbar{display:flex; gap:6px; flex-wrap:wrap}
+  .tag{font:inherit; font-size:11.5px; cursor:pointer; padding:5px 10px; border-radius:99px;
+       border:1px solid var(--line); background:var(--panel); color:var(--muted)}
+  .tag[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#04211d; font-weight:650}
+  .g-list{display:grid; gap:10px}
+  .g-item{background:var(--panel); border:1px solid var(--line); border-radius:11px; padding:12px 14px}
+  .g-item h5{margin:0 0 4px; font-size:14px; display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  .g-item p{margin:0; font-size:13.5px; color:var(--muted)}
+  .pill{font-size:10px; letter-spacing:.05em; text-transform:uppercase; padding:2px 7px; border-radius:99px;
+        border:1px solid var(--line); color:var(--accent); background:var(--panel2); font-weight:700}
+  .g-empty{color:var(--muted); font-size:13.5px; padding:18px; text-align:center}
+
+  /* calculator */
+  .calc{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px; margin:18px 0}
+  .calc .modes{display:flex; gap:8px; margin-bottom:16px}
+  .modes button{flex:1; font:inherit; font-size:13px; cursor:pointer; padding:8px; border-radius:9px;
+                border:1px solid var(--line); background:var(--panel2); color:var(--muted)}
+  .modes button[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#04211d; font-weight:650}
+  .field{margin-bottom:14px}
+  .field label{display:flex; justify-content:space-between; font-size:12.5px; color:var(--muted); margin-bottom:6px}
+  .field label b{color:var(--text); font-variant-numeric:tabular-nums}
+  input[type=range]{width:100%; accent-color:var(--accent); margin:0}
+  .out{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:16px;
+       border-top:1px solid var(--line); padding-top:14px}
+  .out div{background:var(--panel2); border-radius:9px; padding:10px 12px}
+  .out span{display:block; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em}
+  .out b{font-size:16px; font-variant-numeric:tabular-nums}
+
+  /* quiz */
+  .quiz{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px; margin:16px 0}
+  .qmeta{font-size:11.5px; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin-bottom:8px}
+  .qtext{font-size:15.5px; font-weight:600; margin:0 0 14px}
+  .opt{display:block; width:100%; text-align:left; font:inherit; font-size:14px; cursor:pointer;
+       padding:10px 13px; margin-bottom:8px; border-radius:9px; border:1px solid var(--line);
+       background:var(--panel2); color:var(--text); transition:.12s}
+  .opt:hover:not(:disabled){border-color:var(--accent)}
+  .opt:disabled{cursor:default}
+  .opt.right{border-color:var(--good); background:color-mix(in srgb, var(--good) 15%, transparent)}
+  .opt.wrong{border-color:var(--bad); background:color-mix(in srgb, var(--bad) 13%, transparent)}
+  .why{font-size:13.5px; color:var(--muted); border-left:3px solid var(--accent); padding-left:12px; margin:12px 0 0; display:none}
+  .why.show{display:block}
+  .score{font-size:15px; margin-top:12px}
+  .score b{color:var(--accent); font-size:19px}
+
+  .cheat{columns:2; column-gap:26px; font-size:13.5px}
+  .cheat div{break-inside:avoid; margin-bottom:12px}
+  .cheat b{color:var(--accent); display:block; font-size:12px; text-transform:uppercase; letter-spacing:.05em}
+
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr}
+    .side{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line); padding:16px}
+    .side nav{display:grid; grid-template-columns:1fr 1fr; gap:2px}
+    .side-foot{display:none}
+    .wrap,.topbar{padding-left:20px; padding-right:20px}
+    .hero h1{font-size:28px}
+    .grid2,.grid3,.out{grid-template-columns:1fr}
+    .cheat{columns:1}
+  }
+  @media print{
+    .side,.topbar,.read-row,.calc{display:none}
+    body{background:#fff;color:#000}
+    .layout{grid-template-columns:1fr}
+    section{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="side">
+    <div class="brand"><span class="dot"></span><strong>Reinsurance Field Guide</strong></div>
+    <p class="brand-sub">for data engineers</p>
+    <div class="progress-wrap">
+      <div class="progress-top"><span>Reading progress</span><span id="pct">0%</span></div>
+      <div class="bar"><i id="bar"></i></div>
+    </div>
+    <nav id="nav">
+      <a href="#orient"><span class="n">01</span> Orientation</a>
+      <a href="#words"><span class="n">02</span> The language</a>
+      <a href="#treaties"><span class="n">03</span> Treaty structures</a>
+      <a href="#money"><span class="n">04</span> Money flows</a>
+      <a href="#close"><span class="n">05</span> Soft vs hard close</a>
+      <a href="#model"><span class="n">06</span> The data model</a>
+      <a href="#pipeline"><span class="n">07</span> Pipeline patterns</a>
+      <a href="#controls"><span class="n">08</span> Reconciliation</a>
+      <a href="#quiz"><span class="n">09</span> Self-test</a>
+      <a href="#cheat"><span class="n">10</span> Cheat sheet</a>
+    </nav>
+    <div class="side-foot">
+      Progress is saved in this browser. Everything here is a learning aid, not accounting advice.
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div class="crumb">Learn → Reinsurance → Data engineering</div>
+      <button class="btn" id="themeBtn">Light mode</button>
+    </div>
+
+    <div class="wrap">
+
+      <header class="hero">
+        <div class="kicker">Interactive field guide</div>
+        <h1>Reinsurance, explained for the person building the pipeline</h1>
+        <p>You do not need to place a treaty to be useful here. You need to know what the numbers mean,
+           where they come from, and why a late bordereau can break a quarter-end close. Ten short
+           sections, searchable glossary, a cession calculator, and a quiz at the end.</p>
+        <div class="chips">
+          <span class="chip">~25 min read</span>
+          <span class="chip">Glossary of 37 terms</span>
+          <span class="chip">Cession calculator</span>
+          <span class="chip">SQL + PySpark snippets</span>
+          <span class="chip">12-question quiz</span>
+        </div>
+      </header>
+
+      <section id="orient">
+        <h2><span class="num">01</span>Orientation</h2>
+        <p class="lede">Reinsurance is insurance for insurance companies. Everything else is detail on top of
+           that one sentence.</p>
+
+        <p>An insurer (the <b>cedent</b>) takes on risk from policyholders. Some of that risk is bigger than it
+           wants to keep — a single factory, a hurricane, an entire book of motor policies. So it buys
+           protection from a <b>reinsurer</b>, which agrees to take a defined share of the losses in exchange
+           for a defined share of the premium. The reinsurer may in turn buy <b>retrocession</b>, which is
+           reinsurance of reinsurance.</p>
+
+        <div class="card">
+          <h4 style="margin-top:0">The value chain in one line each</h4>
+          <table>
+            <thead><tr><th>Link</th><th>What they do</th><th>What they send you</th></tr></thead>
+            <tbody>
+              <tr><td>Policyholder</td><td>Buys a policy, pays premium</td><td>Nothing directly — arrives via the cedent</td></tr>
+              <tr><td>Cedent (insurer)</td><td>Underwrites and administers the book, cedes part of it</td><td>Bordereaux, premium and loss advices</td></tr>
+              <tr><td>Broker</td><td>Places the treaty, sometimes administers the account</td><td>Placing slips, account statements</td></tr>
+              <tr><td>Reinsurer</td><td>Accepts the cession, holds the risk</td><td>Confirmations, claims settlements</td></tr>
+              <tr><td>Retrocessionaire</td><td>Reinsures the reinsurer</td><td>Retro bordereaux — same shape, one level up</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Why this matters to a data engineer</h3>
+        <p>Almost every reinsurance process is a <b>data exchange between two companies</b>, and neither
+           company controls the other's format, timing or quality. That is the single fact that shapes your
+           job. A policy admin system is mostly internal and predictable. A reinsurance feed is external,
+           late, inconsistently keyed, and financially material.</p>
+        <ul>
+          <li><b>You are usually the reconciliation layer.</b> The cedent says one number, the reinsurer's
+              ledger says another, and someone has to explain the difference by treaty, period and currency.</li>
+          <li><b>Late data is normal, not an exception.</b> Design for restatement from day one.</li>
+          <li><b>Precision is period-dependent.</b> The same table is "good enough" in a soft close and
+              "must tie to the penny" in a hard close. Your pipeline needs to know which one it is in.</li>
+          <li><b>Keys are ugly.</b> Treaty numbers, account numbers and claim references are free text in
+              spreadsheets and vary by cedent.</li>
+        </ul>
+
+        <div class="tip"><b>The mental model to keep:</b> a reinsurance data platform is a set of
+          <i>per-treaty accounts</i>. Every premium, commission, loss and recovery ultimately lands on one
+          account for one period, and that account has to balance to the counterparty's version of the same
+          account.</div>
+
+        <div class="read-row">
+          <span class="label">Finished this section?</span>
+          <button class="btn ghost mark" data-sec="orient">Mark as read</button>
+        </div>
+      </section>
+
+      <section id="words">
+        <h2><span class="num">02</span>The language</h2>
+        <p class="lede">Search or filter. These are the words that appear in column headers, ticket titles and
+           awkward meetings.</p>
+
+        <div class="g-controls">
+          <div class="search"><input id="gSearch" type="search" placeholder="Search terms or definitions…" aria-label="Search glossary" /></div>
+        </div>
+        <div class="g-controls"><div class="tagbar" id="gTags"></div></div>
+        <div class="g-list" id="gList"></div>
+
+        <div class="note"><b>Read definitions as contracts, not synonyms.</b> "Premium" on a bordereau is
+          written premium; "premium" in the ledger may be earned premium after a deposit adjustment. The
+          distinction is where reconciliation breaks come from.</div>
+
+        <div class="read-row">
+          <span class="label">Finished this section?</span>
+          <button class="btn ghost mark" data-sec="words">Mark as read</button>
+        </div>
+      </section>
+
+      <section id="treaties">
+        <h2><span class="num">03</span>Treaty structures</h2>
+        <p class="lede">Two families: proportional, where premium and losses are shared by percentage, and
+           non-proportional, where the reinsurer pays only above a threshold.</p>
+
+        <h3>Proportional</h3>
+        <p>The reinsurer takes a fixed share of everything on the covered portfolio — the same share of
+           premium, the same share of losses.</p>
+        <ul>
+          <li><b>Quota share (QS)</b> — a flat percentage, e.g. 40% of every policy. Simplest to model: one
+              cession percentage applied to premium and loss lines.</li>
+          <li><b>Surplus</b> — the cedent keeps a <i>retention line</i> per risk and cedes the excess up to
+              N lines. Small risks may be unceded entirely; a large risk can be heavily ceded. Cession is
+              therefore <b>row-level</b>, not one percentage for the file.</li>
+          <li><b>Facultative-obligatory (fac oblig)</b> — the cedent must offer, the reinsurer may accept on a
+              per-risk basis. Produces a per-policy acceptance flag your pipeline must respect.</li>
+        </ul>
+
+        <h3>Non-proportional</h3>
+        <p>The reinsurer pays nothing until losses cross an <b>attachment point</b>, then pays up to a
+           <b>limit</b>. This is excess of loss (XL).</p>
+        <ul>
+          <li><b>Per risk XL</b> — applies to each risk separately, protects frequency of medium losses.</li>
+          <li><b>Per occurrence / cat XL</b> — one event, many policies. A hurricane triggers one recovery
+              across thousands of rows, so the calculation is an aggregation, not a lookup.</li>
+          <li><b>Aggregate stop loss</b> — protects the whole year's loss ratio above a threshold.</li>
+        </ul>
+
+        <div class="calc">
+          <div class="modes" role="group" aria-label="Treaty type">
+            <button id="mQS" aria-pressed="true">Quota share</button>
+            <button id="mXL" aria-pressed="false">Excess of loss</button>
+          </div>
+
+          <div id="qsPane">
+            <div class="field">
+              <label for="qsShare">Cession percentage <b id="qsShareV">40%</b></label>
+              <input id="qsShare" type="range" min="0" max="100" step="1" value="40" />
+            </div>
+            <div class="field">
+              <label for="qsComm">Ceding commission <b id="qsCommV">30%</b></label>
+              <input id="qsComm" type="range" min="0" max="50" step="1" value="30" />
+            </div>
+            <div class="field">
+              <label for="qsPrem">Gross written premium <b id="qsPremV">1,000,000</b></label>
+              <input id="qsPrem" type="range" min="100000" max="10000000" step="50000" value="1000000" />
+            </div>
+            <div class="out">
+              <div><span>Ceded premium</span><b id="qsCeded">—</b></div>
+              <div><span>Ceding commission</span><b id="qsCommOut">—</b></div>
+              <div><span>Net to reinsurer</span><b id="qsNet">—</b></div>
+            </div>
+            <p style="font-size:12.5px;color:var(--muted);margin:12px 0 0">
+              Net to reinsurer = ceded premium − ceding commission. Losses would then be shared at the same
+              cession percentage.</p>
+          </div>
+
+          <div id="xlPane" hidden>
+            <div class="field">
+              <label for="xlLoss">Gross loss <b id="xlLossV">2,500,000</b></label>
+              <input id="xlLoss" type="range" min="0" max="20000000" step="50000" value="2500000" />
+            </div>
+            <div class="field">
+              <label for="xlAtt">Attachment point <b id="xlAttV">1,000,000</b></label>
+              <input id="xlAtt" type="range" min="0" max="10000000" step="50000" value="1000000" />
+            </div>
+            <div class="field">
+              <label for="xlLim">Layer limit <b id="xlLimV">4,000,000</b></label>
+              <input id="xlLim" type="range" min="0" max="20000000" step="50000" value="4000000" />
+            </div>
+            <div class="out">
+              <div><span>Reinsurer pays</span><b id="xlRec">—</b></div>
+              <div><span>Net retained</span><b id="xlNet">—</b></div>
+              <div><span>Layer consumed</span><b id="xlUse">—</b></div>
+            </div>
+            <p style="font-size:12.5px;color:var(--muted);margin:12px 0 0">
+              Recovery = MIN(MAX(loss − attachment, 0), limit). Below the attachment point the cedent keeps
+              the whole loss — a very common reconciliation surprise when a small claim is booked as a recovery.</p>
+          </div>
+        </div>
+
+        <div class="note"><b>Data-engineering consequence.</b> A quota share cedes with one join and one
+          multiplication. A surplus treaty needs a per-row retention and line capacity. A cat XL needs an
+          event identifier on every claim before you can compute anything. The treaty type dictates the
+          grain of your fact table — decide it before you write the model.</div>
+
+        <details>
+          <summary>Facultative vs treaty, in one paragraph</summary>
+          <div class="body"><p>Treaty reinsurance is automatic: every risk inside the agreed definition is
+            ceded without asking. Facultative is manual: the cedent offers an individual risk and the
+            reinsurer accepts or declines it. In data terms, treaty cessions are derived (compute from the
+            policy and the treaty terms) whereas facultative cessions are <b>received facts</b> you must load
+            and cannot recompute. Mixing the two in one table is a classic modelling mistake.</p></div>
+        </details>
+
+        <div class="read-row">
+          <span class="label">Finished this section?</span>
+          <button class="btn ghost mark" data-sec="treaties">Mark as read</button>
+        </div>
+      </section>
+
+      <section id="money">
+        <h2><span class="num">04</span>Money flows</h2>
+        <p class="lede">Four flows cover most of the domain: premium in, commission back, losses out,
+           recoveries in.</p>
+
+        <table>
+          <thead><tr><th>Flow</th><th>Direction</th><th>What it is</th><th>Where it breaks</th></tr></thead>
+          <tbody>
+            <tr><td>Premium</td><td>Cedent → reinsurer</td><td>Share of written premium, often paid as a <b>deposit premium</b> on account with a true-up later</td><td>Deposit vs actual; instalments; cancellations</td></tr>
+            <tr><td>Ceding commission</td><td>Reinsurer → cedent</td><td>Contribution to the cedent's acquisition costs, at an agreed rate</td><td>Sliding scale, profit commission, provisional vs final rate</td></tr>
+            <tr><td>Loss / claim</td><td>Reinsurer → cedent</td><td>Reinsurer's share of a paid claim</td><td>Advice arrives after the cedent has already paid</td></tr>
+            <tr><td>Recovery / salvage</td><td>Cedent → reinsurer</td><td>Subrogation or salvage returned, reduces the loss</td><td>Timing gap; netting conventions differ by cedent</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Terms that change the arithmetic</h3>
+        <h4>Sliding-scale commission</h4>
+        <p>The commission rate moves with the loss ratio. A good year earns a higher rate, a bad year a lower
+           one — so the rate is <b>not knowable</b> until the period's losses are known. This is one of the
+           main reasons reinsurance periods stay open.</p>
+
+        <h4>Profit commission</h4>
+        <p>After a defined margin and expense allowance, a percentage of the remaining profit goes back to the
+           cedent. It is a calculation over the whole account for the year, never a row-level field.</p>
+
+        <h4>Experience account / deposit account</h4>
+        <p>A running ledger between the parties: premium in, losses and commission out, balance carried
+           forward, sometimes with interest. If you model it as a stateless monthly figure you will be wrong;
+           it is a <b>balance</b> that needs correct opening and closing values.</p>
+
+        <h4>Cash loss</h4>
+        <p>A large claim the cedent notifies immediately, before the formal bordereau, so cash moves fast.
+           Cash losses typically arrive as their own feed with their own reference numbers and must later be
+           matched to the bordereau line that reports the same claim. Unmatched cash losses are a permanent
+           source of double counting.</p>
+
+        <div class="tip"><b>Design rule:</b> keep cash-loss advices and bordereau claims in separate tables
+          with an explicit link and a match status. Never merge them on arrival — merge them when they
+          reconcile, and expose the unmatched ones as a control.</div>
+
+        <div class="read-row">
+          <span class="label">Finished this section?</span>
+          <button class="btn ghost mark" data-sec="money">Mark as read</button>
+        </div>
+      </section>
+
+      <section id="close">
+        <h2><span class="num">05</span>Soft close vs hard close</h2>
+        <p class="lede">The distinction that decides how much precision your pipeline owes, and whether the
+           period can still change under you.</p>
+
+        <p>Both words describe <b>how final a period's numbers are</b>. They are not two processes; they are
+           two stopping points on the same process.</p>
+
+        <div class="grid2">
+          <div class="card">
+            <h4 style="margin-top:0">Soft close</h4>
+            <p style="font-size:14px">A fast, provisional pass. Book the material and known items, estimate
+               the rest, leave the period <b>open</b> for true-ups. Purpose: get numbers in front of
+               management and treaty managers early.</p>
+            <ul style="font-size:13.5px;margin-bottom:0">
+              <li>Missing bordereaux estimated from prior periods</li>
+              <li>Commission at expected rates</li>
+              <li>IBNR rolled forward, not refreshed</li>
+              <li>Late items posted next period</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4 style="margin-top:0">Hard close</h4>
+            <p style="font-size:14px">The full pass. Every account reconciled, estimates replaced by actuals,
+               signed off, and the period <b>locked</b>. Later corrections become adjustments in the next
+               period, not re-posts.</p>
+            <ul style="font-size:13.5px;margin-bottom:0">
+              <li>All bordereaux received and agreed</li>
+              <li>Adjustable features finalised where possible</li>
+              <li>Recoverables confirmed with counterparty</li>
+              <li>Audit trail, lock, no reopening without exception</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="timeline">
+          <div class="tl-item"><strong>Day 1–3 · Data cut and soft close</strong>
+            <span>Load what has arrived, estimate the gaps, produce provisional treaty accounts.</span></div>
+          <div class="tl-item"><strong>Day 3–5 · Review and challenge</strong>
+            <span>Treaty managers explain movements; large breaks get investigated, not smoothed.</span></div>
+          <div class="tl-item"><strong>Day 5–10 · Late data and true-up</strong>
+            <span>Bordereaux arrive, estimates are reversed and replaced, experience accounts recalculated.</span></div>
+          <div class="tl-item hard"><strong>Quarter / year end · Hard close</strong>
+            <span>Reconciliations signed off, reserves refreshed, period locked, statutory and management views aligned.</span></div>
+        </div>
+
+        <h3>What a data engineer must build differently for each</h3>
+        <table>
+          <thead><tr><th>Concern</th><th>Soft close</th><th>Hard close</th></tr></thead>
+          <tbody>
+            <tr><td>Late data</td><td>Absorbed in the next run, no drama</td><td>Formal restatement with a reason code</td></tr>
+            <tr><td>Estimates</td><td>Permitted, flagged as provisional</td><td>Must be replaced by actuals or justified</td></tr>
+            <tr><td>Reproducibility</td><td>Nice to have</td><td>Mandatory — the number you signed must be reproducible</td></tr>
+            <tr><td>Edits to closed periods</td><td>Allowed</td><td>Blocked by policy; only adjustments forward</td></tr>
+            <tr><td>Audit</td><td>Light logging</td><td>Full lineage, who ran what, with what inputs</td></tr>
+          </tbody>
+        </table>
+
+        <div class="note"><b>The one rule worth memorising.</b> A soft close may be approximate; a hard close
+          must be <b>reproducible</b>. If you cannot re-run the job with the same inputs and get the same
+          signed number, the hard close is not defensible — regardless of whether the number was right.</div>
+
+        <details>
+          <summary>Confusing look-alikes: soft/hard "market" and system close states</summary>
+          <div class="body">
+            <p><b>Soft market / hard market</b> is the underwriting cycle: soft = excess capacity, falling
+              rates, looser terms; hard = capacity withdrawn, rates rising. Nothing to do with closing a
+              period.</p>
+            <p><b>Soft close / hard close in a policy admin system</b> is the same idea expressed as state:
+              soft close warns but permits further postings; hard close blocks them. Same semantics, applied
+              to a system flag rather than a finance calendar.</p>
+          </div>
+        </details>
+
+        <div class="read-row">
+          <span class="label">Finished this section?</span>
+          <button class="btn ghost mark" data-sec="close">Mark as read</button>
+        </div>
+      </section>
+
+      <section id="model">
+        <h2><span class="num">06</span>The data model</h2>
+        <p class="lede">Seven entities carry most reinsurance platforms. Get the grain and the keys right and
+           the rest is plumbing.</p>
+
+        <table>
+          <thead><tr><th>Entity</th><th>Grain</th><th>Key</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><code>cedent</code></td><td>one company</td><td><code>cedent_id</code></td><td>Also holds reporting calendar and currency conventions</td></tr>
+            <tr><td><code>treaty</code></td><td>one contract, versioned</td><td><code>treaty_id</code> + <code>valid_from</code></td><td>Terms change by year; keep versions, never overwrite</td></tr>
+            <tr><td><code>treaty_section</code></td><td>one layer or share</td><td><code>treaty_id</code>, <code>section_no</code></td><td>One treaty can hold several layers with different maths</td></tr>
+            <tr><td><code>bordereau_header</code></td><td>one submission</td><td><code>cedent_id</code>, <code>report_period</code>, <code>sequence</code></td><td>Restatements create a new sequence for the same period</td></tr>
+            <tr><td><code>bordereau_line</code></td><td>one policy or claim row</td><td>header key + <code>line_no</code></td><td>Free-text references; expect duplicates across resubmissions</td></tr>
+            <tr><td><code>claim_notice</code></td><td>one claim event</td><td><code>claim_ref</code> (cedent-scoped)</td><td>Cash losses arrive before the bordereau reporting the same claim</td></tr>
+            <tr><td><code>cession_fact</code></td><td>one accounting movement</td><td>composite + <code>close_period</code></td><td>Premium, commission, loss, recovery as rows — one shape, many types</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Modelling choices that save you later</h3>
+        <ul>
+          <li><b>Treaty is slowly changing, not static.</b> Model it SCD2. A retroactive term change must be
+              visible as a version with its own effect, or every historic number silently moves.</li>
+          <li><b>One movement table beats many.</b> Premium, commission, loss and recovery differ by sign and
+              type, not by structure. A single <code>cession_fact</code> with a <code>movement_type</code> keeps
+              reconciliation and reporting simple.</li>
+          <li><b>Bitemporal, because the domain is.</b> You need "what we knew on the close date" (valid time
+              in the business sense) and "what the file said when we loaded it" (system time). A hard close
+              signs a snapshot of the first, and audit asks about the second.</li>
+          <li><b>Currency is a fact, not a label.</b> Store original currency, amount, rate, rate date and
+              source. Retrospective rate changes are a real reconciliation category.</li>
+          <li><b>Never overwrite a closed period row.</b> Append a correction with a link to the row it
+              corrects and a reason code.</li>
+        </ul>
+
+        <div class="tabs" id="modelTabs">
+          <button class="tab" aria-selected="true" data-pane="pane-ddl">SQL DDL</button>
+          <button class="tab" aria-selected="false" data-pane="pane-scd">Treaty SCD2 (PySpark)</button>
+        </div>
+        <div id="pane-ddl" class="pane show">
+<pre><code>CREATE TABLE cession_fact (
+  cession_id      BIGINT,
+  treaty_id       BIGINT      NOT NULL,
+  section_no      INT         NOT NULL,
+  cedent_id       BIGINT      NOT NULL,
+  policy_ref      VARCHAR(64),
+  claim_ref       VARCHAR(64),
+  movement_type   VARCHAR(16) NOT NULL,  -- PREMIUM | COMMISSION | LOSS | RECOVERY
+  underwriting_yr INT         NOT NULL,
+  accounting_period DATE      NOT NULL,
+  currency        CHAR(3)     NOT NULL,
+  amount_orig     DECIMAL(18,2) NOT NULL,
+  fx_rate         DECIMAL(18,8) NOT NULL,
+  amount_usd      DECIMAL(18,2) NOT NULL,
+  close_run_id    BIGINT      NOT NULL,  -- which close produced this row
+  is_estimate     BOOLEAN     NOT NULL DEFAULT FALSE,
+  corrects_id     BIGINT,               -- set when this row fixes an earlier one
+  loaded_at       TIMESTAMP   NOT NULL
+);
+
+-- A closed period must be immutable: enforce it, do not rely on discipline.
+CREATE TABLE close_period (
+  accounting_period DATE PRIMARY KEY,
+  status            VARCHAR(12) NOT NULL,   -- OPEN | SOFT_CLOSED | HARD_CLOSED
+  closed_at         TIMESTAMP,
+  closed_by         VARCHAR(64),
+  run_id            BIGINT
+);</code></pre>
+        </div>
+        <div id="pane-scd" class="pane">
+<pre><code>from pyspark.sql import Window, functions as F
+
+# Treaty terms arrive with effective dates; keep every version.
+w = Window.partitionBy("treaty_id").orderBy("valid_from")
+
+new_versions = (
+    incoming.alias("i")
+    .join(current.alias("c"), "treaty_id", "left")
+    .filter(
+        (F.col("c.treaty_id").isNull()) |
+        (F.col("i.valid_from") &gt; F.col("c.valid_from"))
+    )
+    .select("i.*")
+)
+
+# Close the previous version the day before the new one starts.
+closed = (
+    current.alias("c")
+    .join(new_versions.alias("n"), "treaty_id", "inner")
+    .select(
+        *[F.col(f"c.{col}") for col in current.columns],
+        F.date_sub(F.col("n.valid_from"), 1).alias("valid_to"),
+        F.lit(True).alias("is_current"),
+    )
+)</code></pre>
+        </div>
+
+        <div class="read-row">
+          <span class="label">Finished this section?</span>
+          <button class="btn ghost mark" data-sec="model">Mark as read</button>
+        </div>
+      </section>
+
+      <section id="pipeline">
+        <h2><span class="num">07</span>Pipeline patterns</h2>
+        <p class="lede">Six patterns that come up in almost every reinsurance build, with the shape of the code.</p>
+
+        <h3>1 · Bordereaux ingestion is not a CSV load</h3>
+        <p>Every cedent sends a different layout, often as an Excel file with merged headers and blank rows,
+           named something like <code>BORD_MAR26_v2_FINAL.xlsx</code>. Land the file <b>immutably</b>, hash it,
+           then parse a copy. The hash is your only defence against the same file being loaded twice under a
+           different name.</p>
+
+        <h3>2 · Idempotency by natural key, not by run time</h3>
+        <p>Reprocessing a period must not double the premium. Deduplicate on
+           <code>(cedent, report_period, sequence, line_no)</code> and write with a deterministic merge, so the
+           second run is a no-op.</p>
+
+<pre><code>-- Idempotent load: rerun-safe by natural key
+MERGE INTO bordereau_line AS t
+USING staged_lines AS s
+  ON  t.cedent_id      = s.cedent_id
+  AND t.report_period  = s.report_period
+  AND t.sequence       = s.sequence
+  AND t.line_no        = s.line_no
+WHEN MATCHED AND s.row_hash &lt;&gt; t.row_hash THEN UPDATE SET *
+WHEN NOT MATCHED THEN INSERT *;</code></pre>
+
+        <h3>3 · Late-arriving data is the default case</h3>
+        <p>A bordereau for March can arrive in June. Do not "fix" the March partition in place. Load it with
+           its <code>report_period</code> (business time) and its <code>received_at</code> (arrival time), and
+           let the close process decide whether to restate.</p>
+
+        <h3>4 · Two clocks, always</h3>
+        <p>Every table gets <code>report_period</code> (what the data is about) and <code>loaded_at</code> (when
+           we learned it). Without both you cannot answer "what did the hard close see on 5 April".</p>
+
+        <h3>5 · Cession calculation is a service, not a spreadsheet</h3>
+        <p>It will be reimplemented by three people in Excel unless you own it. Expose it as one function with
+           treaty terms as input and ceded amount as output, and test it against known cases — share, surplus
+           retention, XL below attachment, XL capped by limit.</p>
+
+        <h3>6 · Close runs are versioned artefacts</h3>
+        <p>Every close produces a <code>run_id</code>. The number signed at hard close must be traceable to that
+           run, its inputs and its code commit. This is not bureaucracy; it is the only way to survive the
+           question "why is this different from last month's version of the same period".</p>
+
+        <div class="tip"><b>Data-quality checks that pay for themselves:</b> premium lines with no matching
+          treaty; cession percentage outside 0–100; loss recovery where gross loss is below the attachment
+          point; duplicate claim references across cash-loss and bordereau feeds; bordereau totals that do not
+          equal the sum of their lines; period-end accruals with no reversal in the next period.</div>
+
+        <div class="read-row">
+          <span class="label">Finished this section?</span>
+          <button class="btn ghost mark" data-sec="pipeline">Mark as read</button>
+        </div>
+      </section>
+
+      <section id="controls">
+        <h2><span class="num">08</span>Reconciliation and controls</h2>
+        <p class="lede">In reinsurance, "the pipeline ran" is not the same as "the numbers agree". Reconciliation
+           is the product.</p>
+
+        <p>You are reconciling three things at once, and confusing them is common:</p>
+        <ul>
+          <li><b>Internal consistency</b> — does the bordereau total equal the sum of its lines?</li>
+          <li><b>Counterparty agreement</b> — does your calculated cession equal what the cedent says it is?</li>
+          <li><b>Period-to-period movement</b> — is the change explainable by new business, cancellations,
+              late data and true-ups?</li>
+        </ul>
+
+        <h3>A break taxonomy worth having from day one</h3>
+        <table>
+          <thead><tr><th>Break type</th><th>Typical cause</th><th>Who fixes it</th></tr></thead>
+          <tbody>
+            <tr><td>Timing</td><td>Bordereau arrived after the cut-off</td><td>Close process — restate</td></tr>
+            <tr><td>Reference / key</td><td>Claim or policy reference formatted differently</td><td>Data engineer — mapping rules</td></tr>
+            <tr><td>Rate / term</td><td>Treaty version applied is not the one in force</td><td>Treaty admin — confirm version</td></tr>
+            <tr><td>Calculation</td><td>Retention, attachment or limit applied wrongly</td><td>Data engineer — fix logic, retest</td></tr>
+            <tr><td>FX</td><td>Different rate or rate date</td><td>Agree rate source with finance</td></tr>
+            <tr><td>Genuine discrepancy</td><td>Counterparty error or disputed item</td><td>Treaty manager — raise with cedent</td></tr>
+          </tbody>
+        </table>
+
+        <div class="tip"><b>Emit the reconciliation, don't just run it.</b> Produce a break table with period,
+          treaty, counterparty, expected, actual, difference, type and owner. A break list that nobody can
+          filter by owner is a break list nobody closes.</div>
+
+        <div class="read-row">
+          <span class="label">Finished this section?</span>
+          <button class="btn ghost mark" data-sec="controls">Mark as read</button>
+        </div>
+      </section>
+
+      <section id="quiz">
+        <h2><span class="num">09</span>Self-test</h2>
+        <p class="lede">Twelve questions. Each answer explains itself — the explanation is the point, not the score.</p>
+
+        <div class="quiz">
+          <div class="qmeta" id="qMeta">Question 1 of 12</div>
+          <p class="qtext" id="qText">Loading…</p>
+          <div id="qOpts"></div>
+          <p class="why" id="qWhy"></p>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; gap:12px">
+            <button class="btn" id="qNext" disabled>Next question</button>
+            <button class="btn ghost" id="qReset">Restart</button>
+          </div>
+          <div class="score" id="qScore"></div>
+        </div>
+
+        <div class="read-row">
+          <span class="label">Finished this section?</span>
+          <button class="btn ghost mark" data-sec="quiz">Mark as read</button>
+        </div>
+      </section>
+
+      <section id="cheat">
+        <h2><span class="num">10</span>Cheat sheet</h2>
+        <p class="lede">Print this page and the navigation disappears, leaving the one-pager.</p>
+
+        <div class="cheat">
+          <div><b>Treaty maths</b>QS: ceded = premium × share. Surplus: ceded = SI − retention, capped at lines × retention. XL: recovery = MIN(MAX(loss − attachment, 0), limit).</div>
+          <div><b>Commission</b>Paid by the reinsurer to the cedent, at an agreed rate; sliding scale moves with the loss ratio; profit commission pays back a share of surplus.</div>
+          <div><b>Soft close</b>Provisional, estimated, period still open. Feeds management.</div>
+          <div><b>Hard close</b>Reconciled, actuals, signed off, period locked. Feeds statutory, audit, board.</div>
+          <div><b>Reproducibility</b>If the signed number cannot be regenerated from the same inputs, the close is not defensible.</div>
+          <div><b>Two clocks</b>report_period (business time) and loaded_at (arrival time). Always both.</div>
+          <div><b>Idempotency</b>Key on (cedent, report_period, sequence, line_no) — never on run timestamp.</div>
+          <div><b>Late data</b>Load, do not patch. Restatement is a decision made by the close, not by the loader.</div>
+          <div><b>Cash losses</b>Separate table, explicit match status. Double counting starts here.</div>
+          <div><b>Treaty versions</b>SCD2. A retroactive change must be visible, not silently applied.</div>
+          <div><b>Closed periods</b>Immutable. Corrections append with corrects_id and a reason code.</div>
+          <div><b>Break taxonomy</b>Timing · key · term · calculation · FX · genuine. Every break needs an owner.</div>
+          <div><b>Vocabulary traps</b>Written ≠ earned. Soft market ≠ soft close. Reinsurance ≠ retrocession.</div>
+          <div><b>First questions to ask</b>What is the grain? Which close is this? Who is the counterparty? What is the natural key? What restates it?</div>
+        </div>
+      </section>
+
+      <footer style="padding:34px 0 10px">
+        <p style="font-size:12.5px;color:var(--muted);margin:0">
+          Built as a learning aid for data engineers entering reinsurance. Concepts are simplified for
+          orientation — always confirm treatment against your own treaty wording and accounting policy.
+          Progress is stored only in this browser.
+        </p>
+      </footer>
+
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- theme ---------------- */
+  var root = document.documentElement;
+  var tBtn = document.getElementById("themeBtn");
+  var savedTheme = null;
+  try { savedTheme = localStorage.getItem("ri_theme"); } catch(e){}
+  if (savedTheme) root.setAttribute("data-theme", savedTheme);
+  function syncThemeBtn(){
+    tBtn.textContent = root.getAttribute("data-theme") === "dark" ? "Light mode" : "Dark mode";
+  }
+  syncThemeBtn();
+  tBtn.addEventListener("click", function(){
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("ri_theme", next); } catch(e){}
+    syncThemeBtn();
+  });
+
+  /* ---------------- glossary ---------------- */
+  var GLOSSARY = [
+    ["Cedent","Role","The insurer that buys reinsurance and cedes part of its risk. Your data almost always enters the platform from a cedent."],
+    ["Reinsurer","Role","The company that accepts the ceded risk and pays the defined share of losses."],
+    ["Retrocession","Role","Reinsurance of a reinsurer. The same mechanics one level up, with its own bordereaux."],
+    ["Broker","Role","Intermediary that places the treaty and often administers the account and its statements."],
+    ["MGA","Role","Managing general agent: underwrites on behalf of an insurer, so the cedent entity in your data may not be the risk carrier."],
+    ["Cession","Structure","The share of risk passed to the reinsurer, and the accounting entry that records it."],
+    ["Quota share","Structure","Proportional treaty ceding a flat percentage of every policy: same share of premium, same share of losses."],
+    ["Surplus treaty","Structure","Proportional treaty where the cedent keeps a retention line and cedes the excess up to N lines. Cession is calculated per risk, not per file."],
+    ["Facultative","Structure","Per-risk reinsurance offered and accepted individually. Cessions are received facts, not derivable from a treaty formula."],
+    ["Facultative-obligatory","Structure","The cedent must offer each risk in scope; the reinsurer may decline. Produces a per-policy acceptance flag."],
+    ["Excess of loss","Structure","Non-proportional treaty: the reinsurer pays losses above an attachment point, up to a limit."],
+    ["Attachment point","Structure","The loss level at which an XL layer starts to respond. Below it, recovery is zero."],
+    ["Limit / layer","Structure","The maximum a layer pays. A layer is defined by its attachment and its limit, e.g. 4m xs 1m."],
+    ["Aggregate stop loss","Structure","Non-proportional cover on the whole year's loss ratio rather than a single risk or event."],
+    ["Reinstatement","Structure","Restoring limit after a loss, usually for an additional premium. The second loss may be capped by a different amount."],
+    ["Deposit premium","Money","Premium paid on account at the start of a period, later trued up to the actual figure."],
+    ["Written vs earned premium","Money","Written is booked when the policy starts; earned is recognised over its term. Same word, different number — a classic break."],
+    ["Unearned premium reserve","Money","The portion of written premium not yet earned, held as a liability at a point in time."],
+    ["Ceding commission","Money","Paid by the reinsurer to the cedent to contribute to acquisition costs, at an agreed rate."],
+    ["Sliding-scale commission","Money","Commission rate that moves with the loss ratio, so it cannot be finalised until losses are known."],
+    ["Profit commission","Money","A share of the account's profit returned to the cedent after an agreed margin, calculated over the whole account and period."],
+    ["Experience account","Money","Running balance between the parties: premium in, losses and commission out, carried forward, sometimes with interest."],
+    ["Premium portfolio","Money","Premium for cover still in force at the end of a period, transferred to the reinsurer and often paid back later."],
+    ["Cash loss","Claims","A large claim notified immediately, ahead of the formal bordereau, so cash moves fast. Must later be matched to the bordereau line."],
+    ["IBNR","Claims","Incurred but not reported: an actuarial estimate of losses already incurred but not yet advised. Always an estimate, always provisional in a soft close."],
+    ["Case reserve","Claims","The estimated cost of a known claim, set by the claims team and revised as it develops."],
+    ["Recovery","Claims","The amount the reinsurer reimburses on a claim. Zero below an XL attachment point."],
+    ["Cat event","Claims","A single occurrence affecting many policies. Requires an event identifier on every claim before recovery can be aggregated."],
+    ["Soft close","Close","Provisional close: material items booked, gaps estimated, period left open for true-ups. For management reporting."],
+    ["Hard close","Close","Full close: everything reconciled, estimates replaced, signed off, period locked. Corrections move forward as adjustments."],
+    ["True-up","Close","Replacing an estimate with the actual figure once it is known, and posting the difference."],
+    ["Underwriting year","Close","The year a risk was written, as distinct from the calendar year it was reported or paid in. Reporting by UY is standard."],
+    ["Loss ratio","Close","Incurred losses divided by earned premium for a period. The number that drives sliding scales and profit commissions."],
+    ["Bordereau","Data","The periodic listing of premium or claims lines sent by the cedent. Format varies per cedent; grain is one line per policy or claim."],
+    ["Treaty section","Data","A share or layer within one treaty. A single treaty can contain several sections with different maths."],
+    ["Restatement","Data","A resubmission that replaces a previous period's figures. Load as a new sequence, never overwrite the original."],
+    ["Control total","Data","A published total (count or amount) used to prove a load is complete, e.g. bordereau header total versus summed lines."]
+  ];
+
+  var gList = document.getElementById("gList");
+  var gSearch = document.getElementById("gSearch");
+  var gTags = document.getElementById("gTags");
+  var activeTag = "All";
+  var tags = ["All"];
+  GLOSSARY.forEach(function(t){ if (tags.indexOf(t[1]) === -1) tags.push(t[1]); });
+
+  tags.forEach(function(t){
+    var b = document.createElement("button");
+    b.className = "tag";
+    b.type = "button";
+    b.textContent = t;
+    b.setAttribute("aria-pressed", String(t === "All"));
+    b.addEventListener("click", function(){
+      activeTag = t;
+      Array.prototype.forEach.call(gTags.children, function(c){
+        c.setAttribute("aria-pressed", String(c.textContent === t));
+      });
+      renderGlossary();
+    });
+    gTags.appendChild(b);
+  });
+
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  function renderGlossary(){
+    var q = (gSearch.value || "").trim().toLowerCase();
+    var rows = GLOSSARY.filter(function(t){
+      var okTag = activeTag === "All" || t[1] === activeTag;
+      var okQ = !q || t[0].toLowerCase().indexOf(q) !== -1 || t[2].toLowerCase().indexOf(q) !== -1;
+      return okTag && okQ;
+    });
+    if (!rows.length){
+      gList.innerHTML = '<div class="g-empty">Nothing matches that search. Try a broader term.</div>';
+      return;
+    }
+    gList.innerHTML = rows.map(function(t){
+      return '<div class="g-item"><h5>' + esc(t[0]) + '<span class="pill">' + esc(t[1]) + '</span></h5>' +
+             '<p>' + esc(t[2]) + '</p></div>';
+    }).join("");
+  }
+  gSearch.addEventListener("input", renderGlossary);
+  renderGlossary();
+
+  /* ---------------- calculator ---------------- */
+  function money(n){
+    return n.toLocaleString("en-US", {maximumFractionDigits:0});
+  }
+  function pct(n){ return n.toFixed(1) + "%"; }
+
+  var qsShare = document.getElementById("qsShare"),
+      qsComm  = document.getElementById("qsComm"),
+      qsPrem  = document.getElementById("qsPrem"),
+      qsPane  = document.getElementById("qsPane"),
+      xlPane  = document.getElementById("xlPane"),
+      xlLoss  = document.getElementById("xlLoss"),
+      xlAtt   = document.getElementById("xlAtt"),
+      xlLim   = document.getElementById("xlLim");
+
+  function calcQS(){
+    var s = +qsShare.value, c = +qsComm.value, p = +qsPrem.value;
+    document.getElementById("qsShareV").textContent = s + "%";
+    document.getElementById("qsCommV").textContent = c + "%";
+    document.getElementById("qsPremV").textContent = money(p);
+    var ceded = p * s / 100;
+    var comm = ceded * c / 100;
+    document.getElementById("qsCeded").textContent = money(ceded);
+    document.getElementById("qsCommOut").textContent = money(comm);
+    document.getElementById("qsNet").textContent = money(ceded - comm);
+  }
+  function calcXL(){
+    var loss = +xlLoss.value, att = +xlAtt.value, lim = +xlLim.value;
+    document.getElementById("xlLossV").textContent = money(loss);
+    document.getElementById("xlAttV").textContent = money(att);
+    document.getElementById("xlLimV").textContent = money(lim);
+    var rec = Math.min(Math.max(loss - att, 0), lim);
+    document.getElementById("xlRec").textContent = money(rec);
+    document.getElementById("xlNet").textContent = money(loss - rec);
+    document.getElementById("xlUse").textContent = lim > 0 ? pct(rec / lim * 100) : "0.0%";
+  }
+  [qsShare, qsComm, qsPrem].forEach(function(el){ el.addEventListener("input", calcQS); });
+  [xlLoss, xlAtt, xlLim].forEach(function(el){ el.addEventListener("input", calcXL); });
+  calcQS(); calcXL();
+
+  var mQS = document.getElementById("mQS"), mXL = document.getElementById("mXL");
+  mQS.addEventListener("click", function(){
+    mQS.setAttribute("aria-pressed","true"); mXL.setAttribute("aria-pressed","false");
+    qsPane.hidden = false; xlPane.hidden = true;
+  });
+  mXL.addEventListener("click", function(){
+    mXL.setAttribute("aria-pressed","true"); mQS.setAttribute("aria-pressed","false");
+    xlPane.hidden = false; qsPane.hidden = true;
+  });
+
+  /* ---------------- tabs ---------------- */
+  Array.prototype.forEach.call(document.querySelectorAll(".tabs"), function(group){
+    group.addEventListener("click", function(ev){
+      var btn = ev.target.closest(".tab");
+      if (!btn) return;
+      Array.prototype.forEach.call(group.querySelectorAll(".tab"), function(t){
+        t.setAttribute("aria-selected", String(t === btn));
+      });
+      Array.prototype.forEach.call(group.parentNode.querySelectorAll(".pane"), function(p){
+        p.classList.toggle("show", p.id === btn.getAttribute("data-pane"));
+      });
+    });
+  });
+
+  /* ---------------- quiz ---------------- */
+  var QUIZ = [
+    {
+      q: "Gross written premium is 1,000,000 under a 40% quota share. How much premium is ceded?",
+      opts: ["250,000","400,000","600,000","1,000,000"],
+      a: 1,
+      why: "A quota share cedes a flat percentage of everything: 1,000,000 × 40% = 400,000. The cedent retains 600,000 and the losses split at the same 40%."
+    },
+    {
+      q: "A per-risk XL attaches at 1,000,000 with a 4,000,000 limit. A 2,500,000 loss occurs. The reinsurer pays:",
+      opts: ["2,500,000","1,500,000","4,000,000","0"],
+      a: 1,
+      why: "Recovery = MIN(MAX(2,500,000 − 1,000,000, 0), 4,000,000) = 1,500,000. The cedent keeps the 1,000,000 attachment plus anything above the limit."
+    },
+    {
+      q: "Which treaty type produces a different cession percentage on different rows of the same file?",
+      opts: ["Quota share","Surplus","Aggregate stop loss","Deposit premium"],
+      a: 1,
+      why: "A surplus treaty cedes only the amount above the cedent's retention, so each risk cedes at its own effective percentage depending on its size."
+    },
+    {
+      q: "Which statement is true of a hard close?",
+      opts: [
+        "Estimates are allowed if they are flagged",
+        "The period stays open for late bordereaux",
+        "The period is locked and later corrections become forward adjustments",
+        "It only applies to the management view"
+      ],
+      a: 2,
+      why: "A hard close locks the period after sign-off. Corrections are posted as adjustments in the next open period with a reason code, not re-posted into the closed one."
+    },
+    {
+      q: "What must a hard close have that a soft close need not?",
+      opts: ["A dashboard","Reproducibility of the signed number","A per-model breakdown","Daily refresh"],
+      a: 1,
+      why: "Approximation is acceptable in a soft close. A signed hard close must be regenerable from the same inputs — otherwise it cannot be defended in an audit."
+    },
+    {
+      q: "A bordereau for March arrives in June. The right handling is:",
+      opts: [
+        "Overwrite the March partition immediately",
+        "Reject it as late and ask for the June format",
+        "Load it with report_period = March and received_at = June, and let the close decide on restatement",
+        "Post it into June so all numbers stay stable"
+      ],
+      a: 2,
+      why: "Carrying both business time and arrival time is what lets you answer 'what did the close see on this date' later. Overwriting destroys the audit trail; dumping it into June misstates both periods."
+    },
+    {
+      q: "The natural key for an idempotent bordereau-line load is:",
+      opts: [
+        "Row number in the file",
+        "Load timestamp plus filename",
+        "cedent, report_period, sequence, line_no",
+        "A random UUID per attempt"
+      ],
+      a: 2,
+      why: "Keying on business identity makes reprocessing a no-op. Timestamps and filenames change on every attempt, so they cannot deduplicate anything."
+    },
+    {
+      q: "How should cash-loss advices and bordereau claims be modelled?",
+      opts: [
+        "One table, merged on arrival",
+        "Separate tables with an explicit match status",
+        "Cash losses discarded once the bordereau arrives",
+        "Cash losses only in the general ledger"
+      ],
+      a: 1,
+      why: "Cash losses arrive before the bordereau that reports the same claim. Separate tables with a match status let you prove nothing is counted twice and expose unmatched items as a control."
+    },
+    {
+      q: "A treaty's terms are amended retroactively. The model should:",
+      opts: [
+        "Update the treaty row in place",
+        "Store versions (SCD2) with validity dates",
+        "Create a new treaty ID and lose the link",
+        "Keep the change in a spreadsheet"
+      ],
+      a: 1,
+      why: "Versioning keeps every historical calculation reproducible and shows the effect of the change. Overwriting silently moves every prior period's numbers."
+    },
+    {
+      q: "Which of these is NOT proportional reinsurance?",
+      opts: ["Quota share","Surplus","Facultative quota share","Aggregate stop loss"],
+      a: 3,
+      why: "Aggregate stop loss is non-proportional: it responds to the year's loss ratio crossing a threshold, not to a fixed share of each policy."
+    },
+    {
+      q: "A 200,000 loss occurs on a layer attaching at 1,000,000 with a 4,000,000 limit. The recovery is:",
+      opts: ["200,000","800,000","0","1,000,000"],
+      a: 2,
+      why: "The loss sits entirely below the attachment point, so the layer does not respond. Booking a recovery here is one of the most common cession-calculation bugs."
+    },
+    {
+      q: "Where does the OPEN / SOFT_CLOSED / HARD_CLOSED state belong?",
+      opts: [
+        "As a column on every transaction row",
+        "In a dedicated close_period table that gates writes",
+        "In a spreadsheet maintained by finance",
+        "Nowhere — it is implicit in the run date"
+      ],
+      a: 1,
+      why: "Close state is a property of the period, not of each row. A dedicated table lets you enforce immutability of a hard-closed period instead of relying on discipline."
+    }
+  ];
+
+  var qi = 0, answered = false, correct = 0;
+  var qMeta = document.getElementById("qMeta"),
+      qText = document.getElementById("qText"),
+      qOpts = document.getElementById("qOpts"),
+      qWhy  = document.getElementById("qWhy"),
+      qNext = document.getElementById("qNext"),
+      qScore = document.getElementById("qScore"),
+      qReset = document.getElementById("qReset");
+
+  function renderQ(){
+    answered = false;
+    var item = QUIZ[qi];
+    qMeta.textContent = "Question " + (qi + 1) + " of " + QUIZ.length;
+    qText.textContent = item.q;
+    qWhy.classList.remove("show");
+    qWhy.textContent = "";
+    qNext.disabled = true;
+    qNext.textContent = qi === QUIZ.length - 1 ? "See score" : "Next question";
+    qOpts.innerHTML = "";
+    item.opts.forEach(function(opt, idx){
+      var b = document.createElement("button");
+      b.className = "opt";
+      b.type = "button";
+      b.textContent = String.fromCharCode(65 + idx) + ".  " + opt;
+      b.addEventListener("click", function(){ answer(idx); });
+      qOpts.appendChild(b);
+    });
+  }
+
+  function answer(idx){
+    if (answered) return;
+    answered = true;
+    var item = QUIZ[qi];
+    var btns = qOpts.querySelectorAll(".opt");
+    Array.prototype.forEach.call(btns, function(b, i){
+      b.disabled = true;
+      if (i === item.a) b.classList.add("right");
+      else if (i === idx) b.classList.add("wrong");
+    });
+    if (idx === item.a) correct++;
+    qWhy.textContent = item.why;
+    qWhy.classList.add("show");
+    qNext.disabled = false;
+  }
+
+  qNext.addEventListener("click", function(){
+    if (qi < QUIZ.length - 1){
+      qi++;
+      renderQ();
+    } else {
+      qMeta.textContent = "Complete";
+      qText.textContent = "You scored " + correct + " out of " + QUIZ.length + ".";
+      qOpts.innerHTML = "";
+      qWhy.classList.remove("show");
+      qScore.innerHTML = "Score: <b>" + correct + "/" + QUIZ.length + "</b> — " +
+        (correct >= 10 ? "solid. You can hold your own in a treaty review."
+         : correct >= 7 ? "good base. Re-read sections 03 and 05."
+         : "worth another pass over sections 03–06.");
+      qNext.disabled = true;
+      qNext.textContent = "Next question";
+      saveQuizBest(correct);
+      updateProgress();
+    }
+  });
+
+  qReset.addEventListener("click", function(){
+    qi = 0; correct = 0; qScore.textContent = "";
+    renderQ();
+  });
+
+  renderQ();
+
+  /* ---------------- progress ---------------- */
+  var marks = Array.prototype.slice.call(document.querySelectorAll(".mark"));
+  var readSet = {};
+  try {
+    readSet = JSON.parse(localStorage.getItem("ri_read") || "{}") || {};
+  } catch(e){ readSet = {}; }
+  var bestQuiz = 0;
+  try { bestQuiz = +(localStorage.getItem("ri_quiz") || 0); } catch(e){ bestQuiz = 0; }
+
+  function saveQuizBest(score){
+    if (score > bestQuiz){
+      bestQuiz = score;
+      try { localStorage.setItem("ri_quiz", String(score)); } catch(e){}
+    }
+  }
+
+  function updateProgress(){
+    var done = marks.filter(function(m){ return readSet[m.getAttribute("data-sec")]; }).length;
+    var total = marks.length;
+    var pctDone = total ? Math.round(done / total * 100) : 0;
+    document.getElementById("pct").textContent = pctDone + "%";
+    document.getElementById("bar").style.width = pctDone + "%";
+  }
+
+  marks.forEach(function(m){
+    var sec = m.getAttribute("data-sec");
+    function paint(){
+      if (readSet[sec]){
+        m.textContent = "Read ✓";
+        m.classList.add("done");
+      } else {
+        m.textContent = "Mark as read";
+        m.classList.remove("done");
+      }
+    }
+    paint();
+    m.addEventListener("click", function(){
+      readSet[sec] = !readSet[sec];
+      try { localStorage.setItem("ri_read", JSON.stringify(readSet)); } catch(e){}
+      paint();
+      updateProgress();
+    });
+  });
+  updateProgress();
+
+  /* ---------------- nav active state ---------------- */
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll("#nav a"));
+  var sections = navLinks.map(function(a){ return document.querySelector(a.getAttribute("href")); });
+
+  if ("IntersectionObserver" in window){
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (en.isIntersecting){
+          var id = en.target.id;
+          navLinks.forEach(function(a){
+            a.classList.toggle("active", a.getAttribute("href") === "#" + id);
+          });
+        }
+      });
+    }, { rootMargin: "-15% 0px -70% 0px", threshold: 0 });
+    sections.forEach(function(s){ if (s) obs.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>
